@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="com.company.Problem_Input_Output">
+  <grid id="27dc6" binding="jpanel" layout-manager="GridLayoutManager" row-count="3" column-count="3" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+    <margin top="15" left="10" bottom="10" right="10"/>
+    <constraints>
+      <xy x="20" y="20" width="720" height="400"/>
+    </constraints>
+    <properties/>
+    <border type="none"/>
+    <children>
+      <component id="e353e" class="javax.swing.JButton" binding="load_testCases">
+        <constraints>
+          <grid row="2" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <background color="-14142792"/>
+          <font name="Lato" size="24"/>
+          <foreground color="-328966"/>
+          <text value="Load test cases"/>
+        </properties>
+      </component>
+      <component id="e6a1d" class="javax.swing.JButton" binding="saveButton">
+        <constraints>
+          <grid row="2" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <background color="-14142792"/>
+          <font name="Lato" size="24"/>
+          <foreground color="-328966"/>
+          <text value="  Save  "/>
+        </properties>
+      </component>
+      <component id="dad9" class="javax.swing.JButton" binding="submitButton" default-binding="true">
+        <constraints>
+          <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <background color="-14142792"/>
+          <font name="Lato" size="24"/>
+          <foreground color="-328966"/>
+          <text value="    Submit   "/>
+        </properties>
+      </component>
+      <component id="d5682" class="javax.swing.JTextField" binding="url">
+        <constraints>
+          <grid row="0" column="0" row-span="1" col-span="3" vsize-policy="0" hsize-policy="6" anchor="9" fill="1" indent="0" use-parent-layout="false">
+            <preferred-size width="150" height="-1"/>
+          </grid>
+        </constraints>
+        <properties>
+          <font name="Lato" size="20"/>
+          <text value="https://atcoder.jp/contests/abc213/tasks/abc213_a"/>
+        </properties>
+      </component>
+      <scrollpane id="826c">
+        <constraints>
+          <grid row="1" column="0" row-span="1" col-span="3" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties/>
+        <border type="none"/>
+        <children>
+          <component id="c3e98" class="javax.swing.JTextPane" binding="status">
+            <constraints/>
+            <properties>
+              <background color="-855310"/>
+              <editable value="false"/>
+              <font name="Lato" size="22"/>
+              <text value=""/>
+            </properties>
+          </component>
+        </children>
+      </scrollpane>
+    </children>
+  </grid>
+</form>

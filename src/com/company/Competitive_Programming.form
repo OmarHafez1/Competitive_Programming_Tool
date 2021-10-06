@@ -1,0 +1,238 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="com.company.Competitive_Programming">
+  <grid id="27dc6" binding="jpanel" layout-manager="GridLayoutManager" row-count="14" column-count="11" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+    <margin top="0" left="0" bottom="0" right="0"/>
+    <constraints>
+      <xy x="15" y="20" width="585" height="1011"/>
+    </constraints>
+    <properties>
+      <background color="-16777216"/>
+      <minimumSize width="-1" height="-1"/>
+      <preferredSize width="-1" height="-1"/>
+    </properties>
+    <border type="none"/>
+    <children>
+      <vspacer id="81bc4">
+        <constraints>
+          <grid row="9" column="3" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
+        </constraints>
+      </vspacer>
+      <vspacer id="3f2f8">
+        <constraints>
+          <grid row="2" column="4" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
+        </constraints>
+      </vspacer>
+      <scrollpane id="11f27" binding="input_JScrollPane">
+        <constraints>
+          <grid row="4" column="0" row-span="1" col-span="11" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false">
+            <minimum-size width="150" height="-1"/>
+            <preferred-size width="150" height="365"/>
+          </grid>
+        </constraints>
+        <properties>
+          <autoscrolls value="true"/>
+          <background color="-13684945"/>
+        </properties>
+        <border type="empty"/>
+        <children>
+          <component id="4e044" class="javax.swing.JTextPane" binding="textPane">
+            <constraints/>
+            <properties>
+              <background color="-13948117"/>
+              <caretColor color="-1"/>
+              <editable value="false"/>
+              <font name="Lato" size="20"/>
+              <foreground color="-1"/>
+            </properties>
+          </component>
+        </children>
+      </scrollpane>
+      <scrollpane id="280a" binding="output_scrollPane">
+        <constraints>
+          <grid row="8" column="0" row-span="1" col-span="11" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false">
+            <minimum-size width="150" height="-1"/>
+            <preferred-size width="150" height="365"/>
+          </grid>
+        </constraints>
+        <properties>
+          <autoscrolls value="true"/>
+          <horizontalScrollBarPolicy value="30"/>
+        </properties>
+        <border type="empty"/>
+        <children>
+          <component id="a9c82" class="javax.swing.JTextPane" binding="jEditorPane">
+            <constraints/>
+            <properties>
+              <autoscrolls value="true"/>
+              <background color="-13948117"/>
+              <disabledTextColor color="-1"/>
+              <editable value="false"/>
+              <font name="Lato" size="20" style="0"/>
+              <foreground color="-1"/>
+              <margin top="4" left="4" bottom="4" right="4"/>
+            </properties>
+          </component>
+        </children>
+      </scrollpane>
+      <vspacer id="cb658">
+        <constraints>
+          <grid row="1" column="6" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
+        </constraints>
+      </vspacer>
+      <component id="dc28f" class="javax.swing.JTextField" binding="textField">
+        <constraints>
+          <grid row="10" column="5" row-span="1" col-span="5" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
+            <preferred-size width="120" height="-1"/>
+            <maximum-size width="120" height="-1"/>
+          </grid>
+        </constraints>
+        <properties>
+          <background color="-13948117"/>
+          <caretColor color="-1"/>
+          <font name="Lato" size="22"/>
+          <foreground color="-1"/>
+          <horizontalAlignment value="2"/>
+          <inheritsPopupMenu value="false"/>
+          <margin top="2" left="6" bottom="2" right="6"/>
+          <text value="A"/>
+          <toolTipText value="Enter the name of the file"/>
+        </properties>
+      </component>
+      <hspacer id="5d6ab">
+        <constraints>
+          <grid row="10" column="10" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+        </constraints>
+      </hspacer>
+      <component id="ecd9a" class="javax.swing.JComboBox" binding="comboBox1" default-binding="true">
+        <constraints>
+          <grid row="2" column="7" row-span="1" col-span="3" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false">
+            <minimum-size width="135" height="35"/>
+          </grid>
+        </constraints>
+        <properties>
+          <background color="-13948117"/>
+          <focusable value="false"/>
+          <font name="Lato" size="20"/>
+          <foreground color="-1"/>
+          <model>
+            <item value="C++17"/>
+            <item value="Python"/>
+            <item value="Python3"/>
+            <item value="Java"/>
+            <item value="Logins"/>
+          </model>
+        </properties>
+      </component>
+      <hspacer id="627cb">
+        <constraints>
+          <grid row="10" column="2" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false">
+            <preferred-size width="53" height="11"/>
+          </grid>
+        </constraints>
+      </hspacer>
+      <component id="89486" class="javax.swing.JLabel">
+        <constraints>
+          <grid row="2" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <alignmentX value="0.5"/>
+          <font name="Lato" size="24"/>
+          <foreground color="-1"/>
+          <text value="Input"/>
+        </properties>
+      </component>
+      <component id="88913" class="javax.swing.JLabel">
+        <constraints>
+          <grid row="6" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <font name="Lato" size="24"/>
+          <foreground color="-1"/>
+          <text value="Output"/>
+        </properties>
+      </component>
+      <hspacer id="15d54">
+        <constraints>
+          <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false">
+            <minimum-size width="5" height="1"/>
+            <preferred-size width="5" height="1"/>
+            <maximum-size width="5" height="1"/>
+          </grid>
+        </constraints>
+      </hspacer>
+      <hspacer id="d5bd9">
+        <constraints>
+          <grid row="10" column="3" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+        </constraints>
+      </hspacer>
+      <hspacer id="9a537">
+        <constraints>
+          <grid row="10" column="4" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+        </constraints>
+      </hspacer>
+      <vspacer id="d9949">
+        <constraints>
+          <grid row="12" column="9" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
+        </constraints>
+      </vspacer>
+      <vspacer id="43e78">
+        <constraints>
+          <grid row="3" column="7" row-span="1" col-span="3" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
+        </constraints>
+      </vspacer>
+      <vspacer id="c660c">
+        <constraints>
+          <grid row="0" column="7" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
+        </constraints>
+      </vspacer>
+      <vspacer id="38499">
+        <constraints>
+          <grid row="12" column="8" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
+        </constraints>
+      </vspacer>
+      <vspacer id="53feb">
+        <constraints>
+          <grid row="13" column="7" row-span="1" col-span="2" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
+        </constraints>
+      </vspacer>
+      <component id="878af" class="javax.swing.JButton" binding="runButton" default-binding="true">
+        <constraints>
+          <grid row="10" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false">
+            <minimum-size width="120" height="34"/>
+            <preferred-size width="120" height="34"/>
+            <maximum-size width="120" height="34"/>
+          </grid>
+        </constraints>
+        <properties>
+          <actionCommand value="Button"/>
+          <alignmentX value="0.5"/>
+          <background color="-14208840"/>
+          <borderPainted value="false"/>
+          <font name="Lato" size="22"/>
+          <foreground color="-1"/>
+          <text value="Run"/>
+        </properties>
+      </component>
+      <vspacer id="6f80f">
+        <constraints>
+          <grid row="5" column="1" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
+        </constraints>
+      </vspacer>
+      <vspacer id="bba4a">
+        <constraints>
+          <grid row="7" column="1" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
+        </constraints>
+      </vspacer>
+      <vspacer id="299d7">
+        <constraints>
+          <grid row="12" column="7" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
+        </constraints>
+      </vspacer>
+      <vspacer id="3b3e">
+        <constraints>
+          <grid row="11" column="7" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
+        </constraints>
+      </vspacer>
+    </children>
+  </grid>
+</form>
