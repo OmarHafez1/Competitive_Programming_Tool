@@ -126,7 +126,7 @@ public class Atcoder implements Websites {
         automation .wait_page_loading(By.xpath(table_xpath));
         WebElement Webtable = automation.get_driver().findElement(By.xpath(table_xpath));
         List<WebElement> totalRowCount = Webtable.findElements(By.xpath(table_xpath + "/tbody/tr"));
-        if(totalRowCount.size() <= 1) {
+        if(totalRowCount.size() < 1) {
             throw new Exception("Can't find results in the problem page");
         }
         return totalRowCount.get(0).findElements(By.xpath("td")).get(6).getText();

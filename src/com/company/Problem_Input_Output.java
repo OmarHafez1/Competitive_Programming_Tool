@@ -42,10 +42,13 @@ public class Problem_Input_Output extends JFrame {
             return Competitive_Programming.folderPath + "/CODE/C++/" + Competitive_Programming.get_fileName() + ".cpp";
         }
         if(competitiveProgramming.comboBox1.getSelectedIndex() == 1) { //Python
-            return Competitive_Programming.folderPath + "CODE/Python/" + Competitive_Programming.get_fileName() + ".py";
+            return Competitive_Programming.folderPath + "/CODE/Python/" + Competitive_Programming.get_fileName() + ".py";
+        }
+        if(competitiveProgramming.comboBox1.getSelectedIndex() == 2) { //Python3
+            return Competitive_Programming.folderPath + "/CODE/Python/" + Competitive_Programming.get_fileName() + ".py";
         }
         // Java
-        return Competitive_Programming.folderPath + "CODE/Java" + Competitive_Programming.get_fileName() + ".java";
+        return Competitive_Programming.folderPath + "/CODE/Java" + Competitive_Programming.get_fileName() + ".java";
     }
 
     protected String get_problem_url () {

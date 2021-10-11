@@ -1,7 +1,9 @@
 package com.company;
 
 import org.openqa.selenium.*;
+import org.openqa.selenium.support.ui.Select;
 
+import javax.swing.*;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
@@ -105,6 +107,21 @@ public class Codeforces implements Websites {
         automation.input_output_unit.setOutput(start_string);
         automation.wait_page_loading(By.name("sourceFile"));
         automation.get_driver().findElement(By.name("sourceFile")).sendKeys(automation.problem_input_output.get_sourceFile_path());
+        String tmp = automation.competitiveProgramming.comboBox1.getSelectedItem().toString().trim().toLowerCase();
+        Select select = new Select(automation.driver.findElement(By.name("programTypeId")));
+        if(tmp.contains("c++")) {
+            select.selectByValue("54");
+        } else if(tmp.contains("python3")) {
+            select.selectByValue("31");
+        } else if(tmp.contains("python")) {
+            select.selectByValue("7");
+        } else if(tmp.contains("java")){
+            select.selectByValue("60");
+        } else {
+            JOptionPane.showMessageDialog(null, "Can't determine the used language", "Undefined language", 0);
+            automation.input_output_unit.setOutput("Can't submit\n");
+            return;
+        }
         automation.get_driver().findElement(By.className("submit")).click();
         automation.sleep(2000);
         if(automation.get_driver().getCurrentUrl().contains(url)) {
