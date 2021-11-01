@@ -288,7 +288,7 @@ public class Competitive_Programming extends JFrame {
         jpanel.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke("F1"), "automation");
 
         // I didn't test this enough so i am commented this now
-        /*
+
         jpanel.getActionMap().put("hack", new AbstractAction("hack") {
             public void actionPerformed(ActionEvent actionEvent) {
                 if(!hack_solution_ISOPEN) {
@@ -309,7 +309,7 @@ public class Competitive_Programming extends JFrame {
             }
         });
         jpanel.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke("F8"), "hack");
-         */
+
         jpanel.addMouseWheelListener(new MouseWheelListener() {
             @Override
             public void mouseWheelMoved(MouseWheelEvent e) {

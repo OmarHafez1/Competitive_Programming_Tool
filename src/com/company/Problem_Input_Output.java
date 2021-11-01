@@ -24,6 +24,7 @@ public class Problem_Input_Output extends JFrame {
     private Codeforces codeforces;
     private Atcoder atcoder;
     private Hakerearth hakerearth;
+    private long Submit_LastClickTime = -10000, LoadTestCases_LastClickTime = -10000, Save_LastClickTime = -10000;
 
     protected void setter(Competitive_Programming competitiveProgramming, JTextPane textPaneesdf) {
         this.competitiveProgramming = competitiveProgramming;
@@ -84,14 +85,26 @@ public class Problem_Input_Output extends JFrame {
             }
         });
         this.load_testCases.addActionListener(e -> {
+            if(System.currentTimeMillis() - LoadTestCases_LastClickTime <= 1500) {
+                return;
+            }
+            LoadTestCases_LastClickTime = System.currentTimeMillis();
             load_testCases();
         });
 
         saveButton.addActionListener(e -> {
+            if(System.currentTimeMillis() - Save_LastClickTime <= 1500) {
+                return;
+            }
+            Save_LastClickTime = System.currentTimeMillis();
             save_the_file();
         });
 
         submitButton.addActionListener(e -> {
+            if(System.currentTimeMillis() - Submit_LastClickTime <= 1500) {
+                return;
+            }
+            Submit_LastClickTime = System.currentTimeMillis();
             submit();
         });
     }
