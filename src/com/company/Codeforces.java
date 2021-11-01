@@ -160,7 +160,7 @@ public class Codeforces implements Websites {
         try {
             String start_string = "codeforces.com problem: " + automation.competitiveProgramming.get_fileName() + "\n";
             automation.wait_page_loading(By.xpath(get_taple_xpath()));
-            while (get_table_result(get_taple_xpath()).toLowerCase().contains("running")) {
+            while (get_table_result(get_taple_xpath()).toLowerCase().contains("running") || get_table_result(get_taple_xpath()).toLowerCase().contains("queue")) {
                 automation.get_driver().get(url);
                 automation.wait_page_loading(By.xpath(get_taple_xpath()));
                 automation.input_output_unit.setOutput(start_string + get_table_result(get_taple_xpath()));
