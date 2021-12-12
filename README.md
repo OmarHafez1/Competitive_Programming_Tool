@@ -62,7 +62,4 @@ _**If you faced "An error occurred" when submitting your solution please check t
 
 **This Tool work for Linux(Ubuntu) and Windows**
 
-# **Copyrights**
-There are no copyrights on it so you can update it and make your own version and share it (for free) with the community but please don't forget to mention me in it. 
-
 Hope you find this useful. Thanks a lot for reading.
