@@ -65,6 +65,4 @@ _**If you faced "An error occurred" when submitting your solution please check t
 # **Copyrights**
 There are no copyrights on it so you can update it and make your own version and share it (for free) with the community but please don't forget to mention me in it. 
 
-If you faced any errors please let me know in the comments. I spend a lot of time writing this program and debug it so I expect that it will work without any errors with you. 
-
 Hope you find this useful. Thanks a lot for reading.
