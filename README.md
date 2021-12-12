@@ -1,6 +1,6 @@
 بسم الله الرحمن الرحيم
 
-**Hello**, I would like to introduce The **Competitive Programming** tool. It provides several useful features for competitive programming.
+**Hello**, I would like to introduce The **Competitive Programming tool**. It provides several useful features for competitive programmers.
 
 # **Test your code for testCases:**
 You can test your code for several test cases at the same time and you can load the test cases supplied in the problem automatically just by paste the link of the problem in the tool and let it load the test cases for you (This work for Codeforces, Atcoder)
