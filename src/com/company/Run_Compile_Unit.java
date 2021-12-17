@@ -234,7 +234,7 @@ public class Run_Compile_Unit {
                 String s;
                 StringBuilder stringBuilder = new StringBuilder();
                 while ((s = stdInput.readLine()) != null) {
-                    stringBuilder.append(s.trim() + "\n");
+                    stringBuilder.append(s + "\n");
                 }
                 timeUsed = System.currentTimeMillis() - time;
 
@@ -293,28 +293,6 @@ public class Run_Compile_Unit {
             if(process != null && process.isAlive()) {
                 process.destroy();
             }
-            /*
-            if (System.getProperty("os.name").charAt(0) == 'W') {
-
-                String[] args2 = new String[]{Competitive_Programming.osCommand, Competitive_Programming.osCH, Competitive_Programming.folderPath + "/src/Elevate64.exe TASKKILL /F /IM a.exe"};
-                String[] args3 = new String[]{Competitive_Programming.osCommand, Competitive_Programming.osCH, Competitive_Programming.folderPath + "/src/Elevate64.exe TASKKILL /F /IM a.out"};
-                String[] args4 = new String[]{Competitive_Programming.osCommand, Competitive_Programming.osCH,  Competitive_Programming.folderPath + "/src/Elevate64.exe TASKKILL /F /IM python3"};
-                String[] args5 = new String[]{Competitive_Programming.osCommand, Competitive_Programming.osCH,  Competitive_Programming.folderPath + "/src/Elevate64.exe TASKKILL /F /IM python"};
-                new ProcessBuilder(args2).start();
-                new ProcessBuilder(args3).start();
-                new ProcessBuilder(args4).start();
-                new ProcessBuilder(args5).start();
-            } else {
-                String[] args2 = new String[]{Competitive_Programming.osCommand, Competitive_Programming.osCH, "pkill python"};
-                String[] args3 = new String[]{Competitive_Programming.osCommand, Competitive_Programming.osCH, "pkill a.out"};
-                String[] args4 = new String[]{Competitive_Programming.osCommand, Competitive_Programming.osCH, "pkill a.exe"};
-                String[] args5 = new String[]{Competitive_Programming.osCommand, Competitive_Programming.osCH, "pkill python3"};
-                new ProcessBuilder(args2).start();
-                new ProcessBuilder(args3).start();
-                new ProcessBuilder(args4).start();
-                new ProcessBuilder(args5).start();
-            }
-             */
         }
         catch (Exception exception) {
             exception.printStackTrace();
