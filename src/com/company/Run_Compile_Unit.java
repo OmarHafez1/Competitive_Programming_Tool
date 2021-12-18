@@ -5,7 +5,6 @@ package com.company;
 
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -240,7 +239,7 @@ public class Run_Compile_Unit {
 
                 memoryUsed = runtime.totalMemory() - runtime.freeMemory() - lastMemoryUsed;
                 memoryUsed = Math.abs(memoryUsed);
-                output[0] = stringBuilder.toString().trim();
+                output[0] = stringBuilder.substring(0, stringBuilder.length()-1);
                 thread3.start();
             }
             catch (Exception e) {

@@ -47,7 +47,7 @@ public class Input_Output_Unit {
 
     protected void sendOutput(String outputMessage, int numberOfInput, long timeUsed, long memoryUsed) {
         String res = "Accepted\n\n";
-        answersTexts.get(numberOfInput-1).setText(answersTexts.get(numberOfInput-1).getText().trim());
+        answersTexts.get(numberOfInput-1).setText(answersTexts.get(numberOfInput-1).getText());
         String output_lines[] = outputMessage.trim().split("\\r?\\n");
         String answer_lines[] = answersTexts.get(numberOfInput-1).getText().split("\\r?\\n");
         if(answersTexts.get(numberOfInput-1).getText().trim().isEmpty())
