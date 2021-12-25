@@ -261,6 +261,14 @@ public class Input_Output_Unit {
                 document.setCharacterAttributes(start, end - start+1, getAttribute(styleContext, (new Color(255, 228, 228))), false);
                 javax.swing.text.DefaultHighlighter.DefaultHighlightPainter highlightPainter = new javax.swing.text.DefaultHighlighter.DefaultHighlightPainter(new Color(123, 0, 0));
                 jEditorPane.getHighlighter().addHighlight(start, end, highlightPainter);
+            } else if(text.contains("Happy New Year!")) {
+                try {
+                    document.setCharacterAttributes(start, end - start+1, getAttribute(styleContext, (new Color(229, 255, 234))), false);
+                    javax.swing.text.DefaultHighlighter.DefaultHighlightPainter highlightPainter = new javax.swing.text.DefaultHighlighter.DefaultHighlightPainter(new Color(0, 187, 35));
+                    jEditorPane.getHighlighter().addHighlight(start, end, highlightPainter);
+                } catch (Exception exception) {
+                    exception.printStackTrace();
+                }
             }
         } catch (Exception exception) {
             exception.printStackTrace();

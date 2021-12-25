@@ -167,7 +167,7 @@ public class Codeforces implements Websites {
                 automation.sleep(500);
             }
             automation.input_output_unit.setOutput(start_string + get_table_result(get_taple_xpath()));
-            if(get_table_result(get_taple_xpath()).contains("Accepted")) {
+            if(get_table_result(get_taple_xpath()).contains("Accepted") || get_table_result(get_taple_xpath()).contains("Happy New Year!")) {
                 automation.problem_input_output.save_the_file();
             }
         } catch (Exception exception) {
