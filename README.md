@@ -1,4 +1,4 @@
-                                                          بسم الله الرحمن الرحيم
+                                                         بسم الله الرحمن الرحيم
 
 **Hello**, I would like to introduce The **Competitive Programming tool**. It provides several useful features for competitive programmers.
 
