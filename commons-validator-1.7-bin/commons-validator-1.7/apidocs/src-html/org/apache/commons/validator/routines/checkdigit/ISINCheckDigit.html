@@ -1,0 +1,183 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en">
+<head>
+<title>Source code</title>
+<link rel="stylesheet" type="text/css" href="../../../../../../../stylesheet.css" title="Style">
+</head>
+<body>
+<div class="sourceContainer">
+<pre><span class="sourceLineNo">001</span>/*<a name="line.1"></a>
+<span class="sourceLineNo">002</span> * Licensed to the Apache Software Foundation (ASF) under one or more<a name="line.2"></a>
+<span class="sourceLineNo">003</span> * contributor license agreements.  See the NOTICE file distributed with<a name="line.3"></a>
+<span class="sourceLineNo">004</span> * this work for additional information regarding copyright ownership.<a name="line.4"></a>
+<span class="sourceLineNo">005</span> * The ASF licenses this file to You under the Apache License, Version 2.0<a name="line.5"></a>
+<span class="sourceLineNo">006</span> * (the "License"); you may not use this file except in compliance with<a name="line.6"></a>
+<span class="sourceLineNo">007</span> * the License.  You may obtain a copy of the License at<a name="line.7"></a>
+<span class="sourceLineNo">008</span> *<a name="line.8"></a>
+<span class="sourceLineNo">009</span> *      http://www.apache.org/licenses/LICENSE-2.0<a name="line.9"></a>
+<span class="sourceLineNo">010</span> *<a name="line.10"></a>
+<span class="sourceLineNo">011</span> * Unless required by applicable law or agreed to in writing, software<a name="line.11"></a>
+<span class="sourceLineNo">012</span> * distributed under the License is distributed on an "AS IS" BASIS,<a name="line.12"></a>
+<span class="sourceLineNo">013</span> * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.<a name="line.13"></a>
+<span class="sourceLineNo">014</span> * See the License for the specific language governing permissions and<a name="line.14"></a>
+<span class="sourceLineNo">015</span> * limitations under the License.<a name="line.15"></a>
+<span class="sourceLineNo">016</span> */<a name="line.16"></a>
+<span class="sourceLineNo">017</span>package org.apache.commons.validator.routines.checkdigit;<a name="line.17"></a>
+<span class="sourceLineNo">018</span><a name="line.18"></a>
+<span class="sourceLineNo">019</span>/**<a name="line.19"></a>
+<span class="sourceLineNo">020</span> * Modulus 10 &lt;b&gt;ISIN&lt;/b&gt; (International Securities Identifying Number) Check Digit calculation/validation.<a name="line.20"></a>
+<span class="sourceLineNo">021</span> *<a name="line.21"></a>
+<span class="sourceLineNo">022</span> * &lt;p&gt;<a name="line.22"></a>
+<span class="sourceLineNo">023</span> * ISIN Numbers are 12 character alphanumeric codes used<a name="line.23"></a>
+<span class="sourceLineNo">024</span> * to identify Securities.<a name="line.24"></a>
+<span class="sourceLineNo">025</span> * &lt;/p&gt;<a name="line.25"></a>
+<span class="sourceLineNo">026</span> *<a name="line.26"></a>
+<span class="sourceLineNo">027</span> * &lt;p&gt;<a name="line.27"></a>
+<span class="sourceLineNo">028</span> * Check digit calculation uses the &lt;i&gt;Modulus 10 Double Add Double&lt;/i&gt; technique<a name="line.28"></a>
+<span class="sourceLineNo">029</span> * with every second digit being weighted by 2. Alphabetic characters are<a name="line.29"></a>
+<span class="sourceLineNo">030</span> * converted to numbers by their position in the alphabet starting with A being 10.<a name="line.30"></a>
+<span class="sourceLineNo">031</span> * Weighted numbers greater than ten are treated as two separate numbers.<a name="line.31"></a>
+<span class="sourceLineNo">032</span> * &lt;/p&gt;<a name="line.32"></a>
+<span class="sourceLineNo">033</span> *<a name="line.33"></a>
+<span class="sourceLineNo">034</span> * &lt;p&gt;<a name="line.34"></a>
+<span class="sourceLineNo">035</span> * See &lt;a href="http://en.wikipedia.org/wiki/ISIN"&gt;Wikipedia - ISIN&lt;/a&gt;<a name="line.35"></a>
+<span class="sourceLineNo">036</span> * for more details.<a name="line.36"></a>
+<span class="sourceLineNo">037</span> * &lt;/p&gt;<a name="line.37"></a>
+<span class="sourceLineNo">038</span> *<a name="line.38"></a>
+<span class="sourceLineNo">039</span> * @version $Revision$<a name="line.39"></a>
+<span class="sourceLineNo">040</span> * @since Validator 1.4<a name="line.40"></a>
+<span class="sourceLineNo">041</span> */<a name="line.41"></a>
+<span class="sourceLineNo">042</span>public final class ISINCheckDigit extends ModulusCheckDigit {<a name="line.42"></a>
+<span class="sourceLineNo">043</span><a name="line.43"></a>
+<span class="sourceLineNo">044</span>    private static final long serialVersionUID = -1239211208101323599L;<a name="line.44"></a>
+<span class="sourceLineNo">045</span><a name="line.45"></a>
+<span class="sourceLineNo">046</span>    private static final int MAX_ALPHANUMERIC_VALUE = 35; // Character.getNumericValue('Z')<a name="line.46"></a>
+<span class="sourceLineNo">047</span><a name="line.47"></a>
+<span class="sourceLineNo">048</span>    /** Singleton ISIN Check Digit instance */<a name="line.48"></a>
+<span class="sourceLineNo">049</span>    public static final CheckDigit ISIN_CHECK_DIGIT = new ISINCheckDigit();<a name="line.49"></a>
+<span class="sourceLineNo">050</span><a name="line.50"></a>
+<span class="sourceLineNo">051</span>    /** weighting given to digits depending on their right position */<a name="line.51"></a>
+<span class="sourceLineNo">052</span>    private static final int[] POSITION_WEIGHT = new int[] {2, 1};<a name="line.52"></a>
+<span class="sourceLineNo">053</span><a name="line.53"></a>
+<span class="sourceLineNo">054</span>    /**<a name="line.54"></a>
+<span class="sourceLineNo">055</span>     * Construct an ISIN Indetifier Check Digit routine.<a name="line.55"></a>
+<span class="sourceLineNo">056</span>     */<a name="line.56"></a>
+<span class="sourceLineNo">057</span>    public ISINCheckDigit() {<a name="line.57"></a>
+<span class="sourceLineNo">058</span>        super(10); // CHECKSTYLE IGNORE MagicNumber<a name="line.58"></a>
+<span class="sourceLineNo">059</span>    }<a name="line.59"></a>
+<span class="sourceLineNo">060</span><a name="line.60"></a>
+<span class="sourceLineNo">061</span>    /**<a name="line.61"></a>
+<span class="sourceLineNo">062</span>     * Calculate the modulus for an ISIN code.<a name="line.62"></a>
+<span class="sourceLineNo">063</span>     *<a name="line.63"></a>
+<span class="sourceLineNo">064</span>     * @param code The code to calculate the modulus for.<a name="line.64"></a>
+<span class="sourceLineNo">065</span>     * @param includesCheckDigit Whether the code includes the Check Digit or not.<a name="line.65"></a>
+<span class="sourceLineNo">066</span>     * @return The modulus value<a name="line.66"></a>
+<span class="sourceLineNo">067</span>     * @throws CheckDigitException if an error occurs calculating the modulus<a name="line.67"></a>
+<span class="sourceLineNo">068</span>     * for the specified code<a name="line.68"></a>
+<span class="sourceLineNo">069</span>     */<a name="line.69"></a>
+<span class="sourceLineNo">070</span>    @Override<a name="line.70"></a>
+<span class="sourceLineNo">071</span>    protected int calculateModulus(String code, boolean includesCheckDigit) throws CheckDigitException {<a name="line.71"></a>
+<span class="sourceLineNo">072</span>        StringBuilder transformed = new  StringBuilder(code.length() * 2); // CHECKSTYLE IGNORE MagicNumber<a name="line.72"></a>
+<span class="sourceLineNo">073</span>        if (includesCheckDigit) {<a name="line.73"></a>
+<span class="sourceLineNo">074</span>            char checkDigit = code.charAt(code.length()-1); // fetch the last character<a name="line.74"></a>
+<span class="sourceLineNo">075</span>            if (!Character.isDigit(checkDigit)){<a name="line.75"></a>
+<span class="sourceLineNo">076</span>                throw new CheckDigitException("Invalid checkdigit["+ checkDigit+ "] in " + code);<a name="line.76"></a>
+<span class="sourceLineNo">077</span>            }<a name="line.77"></a>
+<span class="sourceLineNo">078</span>        }<a name="line.78"></a>
+<span class="sourceLineNo">079</span>        for (int i = 0; i &lt; code.length(); i++) {<a name="line.79"></a>
+<span class="sourceLineNo">080</span>            int charValue = Character.getNumericValue(code.charAt(i));<a name="line.80"></a>
+<span class="sourceLineNo">081</span>            if (charValue &lt; 0 || charValue &gt; MAX_ALPHANUMERIC_VALUE) {<a name="line.81"></a>
+<span class="sourceLineNo">082</span>                throw new CheckDigitException("Invalid Character[" +<a name="line.82"></a>
+<span class="sourceLineNo">083</span>                        (i + 1) + "] = '" + charValue + "'");<a name="line.83"></a>
+<span class="sourceLineNo">084</span>            }<a name="line.84"></a>
+<span class="sourceLineNo">085</span>             // this converts alphanumerics to two digits<a name="line.85"></a>
+<span class="sourceLineNo">086</span>             // so there is no need to overload toInt()<a name="line.86"></a>
+<span class="sourceLineNo">087</span>            transformed.append(charValue);<a name="line.87"></a>
+<span class="sourceLineNo">088</span>        }<a name="line.88"></a>
+<span class="sourceLineNo">089</span>        return super.calculateModulus(transformed.toString(), includesCheckDigit);<a name="line.89"></a>
+<span class="sourceLineNo">090</span>    }<a name="line.90"></a>
+<span class="sourceLineNo">091</span><a name="line.91"></a>
+<span class="sourceLineNo">092</span>    /**<a name="line.92"></a>
+<span class="sourceLineNo">093</span>     * &lt;p&gt;Calculates the &lt;i&gt;weighted&lt;/i&gt; value of a charcter in the<a name="line.93"></a>
+<span class="sourceLineNo">094</span>     * code at a specified position.&lt;/p&gt;<a name="line.94"></a>
+<span class="sourceLineNo">095</span>     *<a name="line.95"></a>
+<span class="sourceLineNo">096</span>     * &lt;p&gt;For ISIN (from right to left) &lt;b&gt;odd&lt;/b&gt; digits are weighted<a name="line.96"></a>
+<span class="sourceLineNo">097</span>     * with a factor of &lt;b&gt;one&lt;/b&gt; and &lt;b&gt;even&lt;/b&gt; digits with a factor<a name="line.97"></a>
+<span class="sourceLineNo">098</span>     * of &lt;b&gt;two&lt;/b&gt;. Weighted values are reduced to their digital root&lt;/p&gt;<a name="line.98"></a>
+<span class="sourceLineNo">099</span>     *<a name="line.99"></a>
+<span class="sourceLineNo">100</span>     * @param charValue The numeric value of the character.<a name="line.100"></a>
+<span class="sourceLineNo">101</span>     * @param leftPos  The position of the character in the code, counting from left to right<a name="line.101"></a>
+<span class="sourceLineNo">102</span>     * @param rightPos The position of the character in the code, counting from right to left<a name="line.102"></a>
+<span class="sourceLineNo">103</span>     * @return The weighted value of the character.<a name="line.103"></a>
+<span class="sourceLineNo">104</span>     */<a name="line.104"></a>
+<span class="sourceLineNo">105</span>    @Override<a name="line.105"></a>
+<span class="sourceLineNo">106</span>    protected int weightedValue(int charValue, int leftPos, int rightPos) {<a name="line.106"></a>
+<span class="sourceLineNo">107</span>        int weight = POSITION_WEIGHT[rightPos % 2]; // CHECKSTYLE IGNORE MagicNumber<a name="line.107"></a>
+<span class="sourceLineNo">108</span>        int weightedValue = charValue * weight;<a name="line.108"></a>
+<span class="sourceLineNo">109</span>        return ModulusCheckDigit.sumDigits(weightedValue);<a name="line.109"></a>
+<span class="sourceLineNo">110</span>    }<a name="line.110"></a>
+<span class="sourceLineNo">111</span>}<a name="line.111"></a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</pre>
+</div>
+</body>
+</html>

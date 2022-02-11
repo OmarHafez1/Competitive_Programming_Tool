@@ -1,0 +1,540 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en">
+<head>
+<title>Source code</title>
+<link rel="stylesheet" type="text/css" href="../../../../../stylesheet.css" title="Style">
+</head>
+<body>
+<div class="sourceContainer">
+<pre><span class="sourceLineNo">001</span>/*<a name="line.1"></a>
+<span class="sourceLineNo">002</span> * Licensed to the Apache Software Foundation (ASF) under one or more<a name="line.2"></a>
+<span class="sourceLineNo">003</span> * contributor license agreements.  See the NOTICE file distributed with<a name="line.3"></a>
+<span class="sourceLineNo">004</span> * this work for additional information regarding copyright ownership.<a name="line.4"></a>
+<span class="sourceLineNo">005</span> * The ASF licenses this file to You under the Apache License, Version 2.0<a name="line.5"></a>
+<span class="sourceLineNo">006</span> * (the "License"); you may not use this file except in compliance with<a name="line.6"></a>
+<span class="sourceLineNo">007</span> * the License.  You may obtain a copy of the License at<a name="line.7"></a>
+<span class="sourceLineNo">008</span> *<a name="line.8"></a>
+<span class="sourceLineNo">009</span> *      http://www.apache.org/licenses/LICENSE-2.0<a name="line.9"></a>
+<span class="sourceLineNo">010</span> *<a name="line.10"></a>
+<span class="sourceLineNo">011</span> * Unless required by applicable law or agreed to in writing, software<a name="line.11"></a>
+<span class="sourceLineNo">012</span> * distributed under the License is distributed on an "AS IS" BASIS,<a name="line.12"></a>
+<span class="sourceLineNo">013</span> * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.<a name="line.13"></a>
+<span class="sourceLineNo">014</span> * See the License for the specific language governing permissions and<a name="line.14"></a>
+<span class="sourceLineNo">015</span> * limitations under the License.<a name="line.15"></a>
+<span class="sourceLineNo">016</span> */<a name="line.16"></a>
+<span class="sourceLineNo">017</span>package org.apache.commons.validator;<a name="line.17"></a>
+<span class="sourceLineNo">018</span><a name="line.18"></a>
+<span class="sourceLineNo">019</span>import java.io.Serializable;<a name="line.19"></a>
+<span class="sourceLineNo">020</span>import java.util.Arrays;<a name="line.20"></a>
+<span class="sourceLineNo">021</span>import java.util.HashSet;<a name="line.21"></a>
+<span class="sourceLineNo">022</span>import java.util.Set;<a name="line.22"></a>
+<span class="sourceLineNo">023</span>import java.util.regex.Matcher;<a name="line.23"></a>
+<span class="sourceLineNo">024</span>import java.util.regex.Pattern;<a name="line.24"></a>
+<span class="sourceLineNo">025</span><a name="line.25"></a>
+<span class="sourceLineNo">026</span>import org.apache.commons.validator.routines.InetAddressValidator;<a name="line.26"></a>
+<span class="sourceLineNo">027</span>import org.apache.commons.validator.util.Flags;<a name="line.27"></a>
+<span class="sourceLineNo">028</span><a name="line.28"></a>
+<span class="sourceLineNo">029</span>/**<a name="line.29"></a>
+<span class="sourceLineNo">030</span> * &lt;p&gt;Validates URLs.&lt;/p&gt;<a name="line.30"></a>
+<span class="sourceLineNo">031</span> * Behavour of validation is modified by passing in options:<a name="line.31"></a>
+<span class="sourceLineNo">032</span> * &lt;ul&gt;<a name="line.32"></a>
+<span class="sourceLineNo">033</span> * &lt;li&gt;ALLOW_2_SLASHES - [FALSE]  Allows double '/' characters in the path<a name="line.33"></a>
+<span class="sourceLineNo">034</span> * component.&lt;/li&gt;<a name="line.34"></a>
+<span class="sourceLineNo">035</span> * &lt;li&gt;NO_FRAGMENT- [FALSE]  By default fragments are allowed, if this option is<a name="line.35"></a>
+<span class="sourceLineNo">036</span> * included then fragments are flagged as illegal.&lt;/li&gt;<a name="line.36"></a>
+<span class="sourceLineNo">037</span> * &lt;li&gt;ALLOW_ALL_SCHEMES - [FALSE] By default only http, https, and ftp are<a name="line.37"></a>
+<span class="sourceLineNo">038</span> * considered valid schemes.  Enabling this option will let any scheme pass validation.&lt;/li&gt;<a name="line.38"></a>
+<span class="sourceLineNo">039</span> * &lt;/ul&gt;<a name="line.39"></a>
+<span class="sourceLineNo">040</span> *<a name="line.40"></a>
+<span class="sourceLineNo">041</span> * &lt;p&gt;Originally based in on php script by Debbie Dyer, validation.php v1.2b, Date: 03/07/02,<a name="line.41"></a>
+<span class="sourceLineNo">042</span> * http://javascript.internet.com. However, this validation now bears little resemblance<a name="line.42"></a>
+<span class="sourceLineNo">043</span> * to the php original.&lt;/p&gt;<a name="line.43"></a>
+<span class="sourceLineNo">044</span> * &lt;pre&gt;<a name="line.44"></a>
+<span class="sourceLineNo">045</span> *   Example of usage:<a name="line.45"></a>
+<span class="sourceLineNo">046</span> *   Construct a UrlValidator with valid schemes of "http", and "https".<a name="line.46"></a>
+<span class="sourceLineNo">047</span> *<a name="line.47"></a>
+<span class="sourceLineNo">048</span> *    String[] schemes = {"http","https"}.<a name="line.48"></a>
+<span class="sourceLineNo">049</span> *    UrlValidator urlValidator = new UrlValidator(schemes);<a name="line.49"></a>
+<span class="sourceLineNo">050</span> *    if (urlValidator.isValid("ftp://foo.bar.com/")) {<a name="line.50"></a>
+<span class="sourceLineNo">051</span> *       System.out.println("url is valid");<a name="line.51"></a>
+<span class="sourceLineNo">052</span> *    } else {<a name="line.52"></a>
+<span class="sourceLineNo">053</span> *       System.out.println("url is invalid");<a name="line.53"></a>
+<span class="sourceLineNo">054</span> *    }<a name="line.54"></a>
+<span class="sourceLineNo">055</span> *<a name="line.55"></a>
+<span class="sourceLineNo">056</span> *    prints "url is invalid"<a name="line.56"></a>
+<span class="sourceLineNo">057</span> *   If instead the default constructor is used.<a name="line.57"></a>
+<span class="sourceLineNo">058</span> *<a name="line.58"></a>
+<span class="sourceLineNo">059</span> *    UrlValidator urlValidator = new UrlValidator();<a name="line.59"></a>
+<span class="sourceLineNo">060</span> *    if (urlValidator.isValid("ftp://foo.bar.com/")) {<a name="line.60"></a>
+<span class="sourceLineNo">061</span> *       System.out.println("url is valid");<a name="line.61"></a>
+<span class="sourceLineNo">062</span> *    } else {<a name="line.62"></a>
+<span class="sourceLineNo">063</span> *       System.out.println("url is invalid");<a name="line.63"></a>
+<span class="sourceLineNo">064</span> *    }<a name="line.64"></a>
+<span class="sourceLineNo">065</span> *<a name="line.65"></a>
+<span class="sourceLineNo">066</span> *   prints out "url is valid"<a name="line.66"></a>
+<span class="sourceLineNo">067</span> *  &lt;/pre&gt;<a name="line.67"></a>
+<span class="sourceLineNo">068</span> *<a name="line.68"></a>
+<span class="sourceLineNo">069</span> * @see<a name="line.69"></a>
+<span class="sourceLineNo">070</span> * &lt;a href="http://www.ietf.org/rfc/rfc2396.txt"&gt;<a name="line.70"></a>
+<span class="sourceLineNo">071</span> *  Uniform Resource Identifiers (URI): Generic Syntax<a name="line.71"></a>
+<span class="sourceLineNo">072</span> * &lt;/a&gt;<a name="line.72"></a>
+<span class="sourceLineNo">073</span> *<a name="line.73"></a>
+<span class="sourceLineNo">074</span> * @version $Revision$<a name="line.74"></a>
+<span class="sourceLineNo">075</span> * @since Validator 1.1<a name="line.75"></a>
+<span class="sourceLineNo">076</span> * @deprecated Use the new UrlValidator in the routines package. This class<a name="line.76"></a>
+<span class="sourceLineNo">077</span> * will be removed in a future release.<a name="line.77"></a>
+<span class="sourceLineNo">078</span> */<a name="line.78"></a>
+<span class="sourceLineNo">079</span>@Deprecated<a name="line.79"></a>
+<span class="sourceLineNo">080</span>public class UrlValidator implements Serializable {<a name="line.80"></a>
+<span class="sourceLineNo">081</span><a name="line.81"></a>
+<span class="sourceLineNo">082</span>    private static final long serialVersionUID = 24137157400029593L;<a name="line.82"></a>
+<span class="sourceLineNo">083</span><a name="line.83"></a>
+<span class="sourceLineNo">084</span>    /**<a name="line.84"></a>
+<span class="sourceLineNo">085</span>     * Allows all validly formatted schemes to pass validation instead of<a name="line.85"></a>
+<span class="sourceLineNo">086</span>     * supplying a set of valid schemes.<a name="line.86"></a>
+<span class="sourceLineNo">087</span>     */<a name="line.87"></a>
+<span class="sourceLineNo">088</span>    public static final int ALLOW_ALL_SCHEMES = 1 &lt;&lt; 0;<a name="line.88"></a>
+<span class="sourceLineNo">089</span><a name="line.89"></a>
+<span class="sourceLineNo">090</span>    /**<a name="line.90"></a>
+<span class="sourceLineNo">091</span>     * Allow two slashes in the path component of the URL.<a name="line.91"></a>
+<span class="sourceLineNo">092</span>     */<a name="line.92"></a>
+<span class="sourceLineNo">093</span>    public static final int ALLOW_2_SLASHES = 1 &lt;&lt; 1;<a name="line.93"></a>
+<span class="sourceLineNo">094</span><a name="line.94"></a>
+<span class="sourceLineNo">095</span>    /**<a name="line.95"></a>
+<span class="sourceLineNo">096</span>     * Enabling this options disallows any URL fragments.<a name="line.96"></a>
+<span class="sourceLineNo">097</span>     */<a name="line.97"></a>
+<span class="sourceLineNo">098</span>    public static final int NO_FRAGMENTS = 1 &lt;&lt; 2;<a name="line.98"></a>
+<span class="sourceLineNo">099</span><a name="line.99"></a>
+<span class="sourceLineNo">100</span>    private static final String ALPHA_CHARS = "a-zA-Z";<a name="line.100"></a>
+<span class="sourceLineNo">101</span><a name="line.101"></a>
+<span class="sourceLineNo">102</span>// NOT USED   private static final String ALPHA_NUMERIC_CHARS = ALPHA_CHARS + "\\d";<a name="line.102"></a>
+<span class="sourceLineNo">103</span><a name="line.103"></a>
+<span class="sourceLineNo">104</span>    private static final String SPECIAL_CHARS = ";/@&amp;=,.?:+$";<a name="line.104"></a>
+<span class="sourceLineNo">105</span><a name="line.105"></a>
+<span class="sourceLineNo">106</span>    private static final String VALID_CHARS = "[^\\s" + SPECIAL_CHARS + "]";<a name="line.106"></a>
+<span class="sourceLineNo">107</span><a name="line.107"></a>
+<span class="sourceLineNo">108</span>    // Drop numeric, and  "+-." for now<a name="line.108"></a>
+<span class="sourceLineNo">109</span>    private static final String AUTHORITY_CHARS_REGEX = "\\p{Alnum}\\-\\.";<a name="line.109"></a>
+<span class="sourceLineNo">110</span><a name="line.110"></a>
+<span class="sourceLineNo">111</span>    private static final String ATOM = VALID_CHARS + '+';<a name="line.111"></a>
+<span class="sourceLineNo">112</span><a name="line.112"></a>
+<span class="sourceLineNo">113</span>    /**<a name="line.113"></a>
+<span class="sourceLineNo">114</span>     * This expression derived/taken from the BNF for URI (RFC2396).<a name="line.114"></a>
+<span class="sourceLineNo">115</span>     */<a name="line.115"></a>
+<span class="sourceLineNo">116</span>    private static final String URL_REGEX =<a name="line.116"></a>
+<span class="sourceLineNo">117</span>            "^(([^:/?#]+):)?(//([^/?#]*))?([^?#]*)(\\?([^#]*))?(#(.*))?";<a name="line.117"></a>
+<span class="sourceLineNo">118</span>    //                                                                      12            3  4          5       6   7        8 9<a name="line.118"></a>
+<span class="sourceLineNo">119</span>    private static final Pattern URL_PATTERN = Pattern.compile(URL_REGEX);<a name="line.119"></a>
+<span class="sourceLineNo">120</span><a name="line.120"></a>
+<span class="sourceLineNo">121</span>    /**<a name="line.121"></a>
+<span class="sourceLineNo">122</span>     * Schema/Protocol (ie. http:, ftp:, file:, etc).<a name="line.122"></a>
+<span class="sourceLineNo">123</span>     */<a name="line.123"></a>
+<span class="sourceLineNo">124</span>    private static final int PARSE_URL_SCHEME = 2;<a name="line.124"></a>
+<span class="sourceLineNo">125</span><a name="line.125"></a>
+<span class="sourceLineNo">126</span>    /**<a name="line.126"></a>
+<span class="sourceLineNo">127</span>     * Includes hostname/ip and port number.<a name="line.127"></a>
+<span class="sourceLineNo">128</span>     */<a name="line.128"></a>
+<span class="sourceLineNo">129</span>    private static final int PARSE_URL_AUTHORITY = 4;<a name="line.129"></a>
+<span class="sourceLineNo">130</span><a name="line.130"></a>
+<span class="sourceLineNo">131</span>    private static final int PARSE_URL_PATH = 5;<a name="line.131"></a>
+<span class="sourceLineNo">132</span><a name="line.132"></a>
+<span class="sourceLineNo">133</span>    private static final int PARSE_URL_QUERY = 7;<a name="line.133"></a>
+<span class="sourceLineNo">134</span><a name="line.134"></a>
+<span class="sourceLineNo">135</span>    private static final int PARSE_URL_FRAGMENT = 9;<a name="line.135"></a>
+<span class="sourceLineNo">136</span><a name="line.136"></a>
+<span class="sourceLineNo">137</span>    /**<a name="line.137"></a>
+<span class="sourceLineNo">138</span>     * Protocol (ie. http:, ftp:,https:).<a name="line.138"></a>
+<span class="sourceLineNo">139</span>     */<a name="line.139"></a>
+<span class="sourceLineNo">140</span>    private static final Pattern SCHEME_PATTERN = Pattern.compile("^\\p{Alpha}[\\p{Alnum}\\+\\-\\.]*");<a name="line.140"></a>
+<span class="sourceLineNo">141</span><a name="line.141"></a>
+<span class="sourceLineNo">142</span>    private static final String AUTHORITY_REGEX =<a name="line.142"></a>
+<span class="sourceLineNo">143</span>       "^([" + AUTHORITY_CHARS_REGEX + "]*)(:\\d*)?(.*)?";<a name="line.143"></a>
+<span class="sourceLineNo">144</span>    //                                                                            1                          2  3       4<a name="line.144"></a>
+<span class="sourceLineNo">145</span>    private static final Pattern AUTHORITY_PATTERN = Pattern.compile(AUTHORITY_REGEX);<a name="line.145"></a>
+<span class="sourceLineNo">146</span><a name="line.146"></a>
+<span class="sourceLineNo">147</span>    private static final int PARSE_AUTHORITY_HOST_IP = 1;<a name="line.147"></a>
+<span class="sourceLineNo">148</span><a name="line.148"></a>
+<span class="sourceLineNo">149</span>    private static final int PARSE_AUTHORITY_PORT = 2;<a name="line.149"></a>
+<span class="sourceLineNo">150</span><a name="line.150"></a>
+<span class="sourceLineNo">151</span>    /**<a name="line.151"></a>
+<span class="sourceLineNo">152</span>     * Should always be empty.<a name="line.152"></a>
+<span class="sourceLineNo">153</span>     */<a name="line.153"></a>
+<span class="sourceLineNo">154</span>    private static final int PARSE_AUTHORITY_EXTRA = 3;<a name="line.154"></a>
+<span class="sourceLineNo">155</span><a name="line.155"></a>
+<span class="sourceLineNo">156</span>    private static final Pattern PATH_PATTERN = Pattern.compile("^(/[-\\w:@&amp;?=+,.!/~*'%$_;]*)?$");<a name="line.156"></a>
+<span class="sourceLineNo">157</span><a name="line.157"></a>
+<span class="sourceLineNo">158</span>    private static final Pattern QUERY_PATTERN = Pattern.compile("^(.*)$");<a name="line.158"></a>
+<span class="sourceLineNo">159</span><a name="line.159"></a>
+<span class="sourceLineNo">160</span>    private static final Pattern LEGAL_ASCII_PATTERN = Pattern.compile("^\\p{ASCII}+$");<a name="line.160"></a>
+<span class="sourceLineNo">161</span><a name="line.161"></a>
+<span class="sourceLineNo">162</span>    private static final Pattern DOMAIN_PATTERN =<a name="line.162"></a>
+<span class="sourceLineNo">163</span>            Pattern.compile("^" + ATOM + "(\\." + ATOM + ")*$");<a name="line.163"></a>
+<span class="sourceLineNo">164</span><a name="line.164"></a>
+<span class="sourceLineNo">165</span>    private static final Pattern PORT_PATTERN = Pattern.compile("^:(\\d{1,5})$");<a name="line.165"></a>
+<span class="sourceLineNo">166</span><a name="line.166"></a>
+<span class="sourceLineNo">167</span>    private static final Pattern ATOM_PATTERN = Pattern.compile("^(" + ATOM + ").*?$");<a name="line.167"></a>
+<span class="sourceLineNo">168</span><a name="line.168"></a>
+<span class="sourceLineNo">169</span>    private static final Pattern ALPHA_PATTERN = Pattern.compile("^[" + ALPHA_CHARS + "]");<a name="line.169"></a>
+<span class="sourceLineNo">170</span><a name="line.170"></a>
+<span class="sourceLineNo">171</span>    /**<a name="line.171"></a>
+<span class="sourceLineNo">172</span>     * Holds the set of current validation options.<a name="line.172"></a>
+<span class="sourceLineNo">173</span>     */<a name="line.173"></a>
+<span class="sourceLineNo">174</span>    private final Flags options;<a name="line.174"></a>
+<span class="sourceLineNo">175</span><a name="line.175"></a>
+<span class="sourceLineNo">176</span>    /**<a name="line.176"></a>
+<span class="sourceLineNo">177</span>     * The set of schemes that are allowed to be in a URL.<a name="line.177"></a>
+<span class="sourceLineNo">178</span>     */<a name="line.178"></a>
+<span class="sourceLineNo">179</span>    private final Set&lt;String&gt; allowedSchemes = new HashSet&lt;String&gt;();<a name="line.179"></a>
+<span class="sourceLineNo">180</span><a name="line.180"></a>
+<span class="sourceLineNo">181</span>    /**<a name="line.181"></a>
+<span class="sourceLineNo">182</span>     * If no schemes are provided, default to this set.<a name="line.182"></a>
+<span class="sourceLineNo">183</span>     */<a name="line.183"></a>
+<span class="sourceLineNo">184</span>    protected String[] defaultSchemes = {"http", "https", "ftp"};<a name="line.184"></a>
+<span class="sourceLineNo">185</span><a name="line.185"></a>
+<span class="sourceLineNo">186</span>    /**<a name="line.186"></a>
+<span class="sourceLineNo">187</span>     * Create a UrlValidator with default properties.<a name="line.187"></a>
+<span class="sourceLineNo">188</span>     */<a name="line.188"></a>
+<span class="sourceLineNo">189</span>    public UrlValidator() {<a name="line.189"></a>
+<span class="sourceLineNo">190</span>        this(null);<a name="line.190"></a>
+<span class="sourceLineNo">191</span>    }<a name="line.191"></a>
+<span class="sourceLineNo">192</span><a name="line.192"></a>
+<span class="sourceLineNo">193</span>    /**<a name="line.193"></a>
+<span class="sourceLineNo">194</span>     * Behavior of validation is modified by passing in several strings options:<a name="line.194"></a>
+<span class="sourceLineNo">195</span>     * @param schemes Pass in one or more url schemes to consider valid, passing in<a name="line.195"></a>
+<span class="sourceLineNo">196</span>     *        a null will default to "http,https,ftp" being valid.<a name="line.196"></a>
+<span class="sourceLineNo">197</span>     *        If a non-null schemes is specified then all valid schemes must<a name="line.197"></a>
+<span class="sourceLineNo">198</span>     *        be specified. Setting the ALLOW_ALL_SCHEMES option will<a name="line.198"></a>
+<span class="sourceLineNo">199</span>     *        ignore the contents of schemes.<a name="line.199"></a>
+<span class="sourceLineNo">200</span>     */<a name="line.200"></a>
+<span class="sourceLineNo">201</span>    public UrlValidator(String[] schemes) {<a name="line.201"></a>
+<span class="sourceLineNo">202</span>        this(schemes, 0);<a name="line.202"></a>
+<span class="sourceLineNo">203</span>    }<a name="line.203"></a>
+<span class="sourceLineNo">204</span><a name="line.204"></a>
+<span class="sourceLineNo">205</span>    /**<a name="line.205"></a>
+<span class="sourceLineNo">206</span>     * Initialize a UrlValidator with the given validation options.<a name="line.206"></a>
+<span class="sourceLineNo">207</span>     * @param options The options should be set using the public constants declared in<a name="line.207"></a>
+<span class="sourceLineNo">208</span>     * this class.  To set multiple options you simply add them together.  For example,<a name="line.208"></a>
+<span class="sourceLineNo">209</span>     * ALLOW_2_SLASHES + NO_FRAGMENTS enables both of those options.<a name="line.209"></a>
+<span class="sourceLineNo">210</span>     */<a name="line.210"></a>
+<span class="sourceLineNo">211</span>    public UrlValidator(int options) {<a name="line.211"></a>
+<span class="sourceLineNo">212</span>        this(null, options);<a name="line.212"></a>
+<span class="sourceLineNo">213</span>    }<a name="line.213"></a>
+<span class="sourceLineNo">214</span><a name="line.214"></a>
+<span class="sourceLineNo">215</span>    /**<a name="line.215"></a>
+<span class="sourceLineNo">216</span>     * Behavour of validation is modified by passing in options:<a name="line.216"></a>
+<span class="sourceLineNo">217</span>     * @param schemes The set of valid schemes.<a name="line.217"></a>
+<span class="sourceLineNo">218</span>     * @param options The options should be set using the public constants declared in<a name="line.218"></a>
+<span class="sourceLineNo">219</span>     * this class.  To set multiple options you simply add them together.  For example,<a name="line.219"></a>
+<span class="sourceLineNo">220</span>     * ALLOW_2_SLASHES + NO_FRAGMENTS enables both of those options.<a name="line.220"></a>
+<span class="sourceLineNo">221</span>     */<a name="line.221"></a>
+<span class="sourceLineNo">222</span>    public UrlValidator(String[] schemes, int options) {<a name="line.222"></a>
+<span class="sourceLineNo">223</span>        this.options = new Flags(options);<a name="line.223"></a>
+<span class="sourceLineNo">224</span><a name="line.224"></a>
+<span class="sourceLineNo">225</span>        if (this.options.isOn(ALLOW_ALL_SCHEMES)) {<a name="line.225"></a>
+<span class="sourceLineNo">226</span>            return;<a name="line.226"></a>
+<span class="sourceLineNo">227</span>        }<a name="line.227"></a>
+<span class="sourceLineNo">228</span><a name="line.228"></a>
+<span class="sourceLineNo">229</span>        if (schemes == null) {<a name="line.229"></a>
+<span class="sourceLineNo">230</span>            schemes = this.defaultSchemes;<a name="line.230"></a>
+<span class="sourceLineNo">231</span>        }<a name="line.231"></a>
+<span class="sourceLineNo">232</span><a name="line.232"></a>
+<span class="sourceLineNo">233</span>        this.allowedSchemes.addAll(Arrays.asList(schemes));<a name="line.233"></a>
+<span class="sourceLineNo">234</span>    }<a name="line.234"></a>
+<span class="sourceLineNo">235</span><a name="line.235"></a>
+<span class="sourceLineNo">236</span>    /**<a name="line.236"></a>
+<span class="sourceLineNo">237</span>     * &lt;p&gt;Checks if a field has a valid url address.&lt;/p&gt;<a name="line.237"></a>
+<span class="sourceLineNo">238</span>     *<a name="line.238"></a>
+<span class="sourceLineNo">239</span>     * @param value The value validation is being performed on.  A &lt;code&gt;null&lt;/code&gt;<a name="line.239"></a>
+<span class="sourceLineNo">240</span>     * value is considered invalid.<a name="line.240"></a>
+<span class="sourceLineNo">241</span>     * @return true if the url is valid.<a name="line.241"></a>
+<span class="sourceLineNo">242</span>     */<a name="line.242"></a>
+<span class="sourceLineNo">243</span>    public boolean isValid(String value) {<a name="line.243"></a>
+<span class="sourceLineNo">244</span>        if (value == null) {<a name="line.244"></a>
+<span class="sourceLineNo">245</span>            return false;<a name="line.245"></a>
+<span class="sourceLineNo">246</span>        }<a name="line.246"></a>
+<span class="sourceLineNo">247</span>        if (!LEGAL_ASCII_PATTERN.matcher(value).matches()) {<a name="line.247"></a>
+<span class="sourceLineNo">248</span>           return false;<a name="line.248"></a>
+<span class="sourceLineNo">249</span>        }<a name="line.249"></a>
+<span class="sourceLineNo">250</span><a name="line.250"></a>
+<span class="sourceLineNo">251</span>        // Check the whole url address structure<a name="line.251"></a>
+<span class="sourceLineNo">252</span>        Matcher urlMatcher = URL_PATTERN.matcher(value);<a name="line.252"></a>
+<span class="sourceLineNo">253</span>        if (!urlMatcher.matches()) {<a name="line.253"></a>
+<span class="sourceLineNo">254</span>            return false;<a name="line.254"></a>
+<span class="sourceLineNo">255</span>        }<a name="line.255"></a>
+<span class="sourceLineNo">256</span><a name="line.256"></a>
+<span class="sourceLineNo">257</span>        if (!isValidScheme(urlMatcher.group(PARSE_URL_SCHEME))) {<a name="line.257"></a>
+<span class="sourceLineNo">258</span>            return false;<a name="line.258"></a>
+<span class="sourceLineNo">259</span>        }<a name="line.259"></a>
+<span class="sourceLineNo">260</span><a name="line.260"></a>
+<span class="sourceLineNo">261</span>        if (!isValidAuthority(urlMatcher.group(PARSE_URL_AUTHORITY))) {<a name="line.261"></a>
+<span class="sourceLineNo">262</span>            return false;<a name="line.262"></a>
+<span class="sourceLineNo">263</span>        }<a name="line.263"></a>
+<span class="sourceLineNo">264</span><a name="line.264"></a>
+<span class="sourceLineNo">265</span>        if (!isValidPath(urlMatcher.group(PARSE_URL_PATH))) {<a name="line.265"></a>
+<span class="sourceLineNo">266</span>            return false;<a name="line.266"></a>
+<span class="sourceLineNo">267</span>        }<a name="line.267"></a>
+<span class="sourceLineNo">268</span><a name="line.268"></a>
+<span class="sourceLineNo">269</span>        if (!isValidQuery(urlMatcher.group(PARSE_URL_QUERY))) {<a name="line.269"></a>
+<span class="sourceLineNo">270</span>            return false;<a name="line.270"></a>
+<span class="sourceLineNo">271</span>        }<a name="line.271"></a>
+<span class="sourceLineNo">272</span><a name="line.272"></a>
+<span class="sourceLineNo">273</span>        if (!isValidFragment(urlMatcher.group(PARSE_URL_FRAGMENT))) {<a name="line.273"></a>
+<span class="sourceLineNo">274</span>            return false;<a name="line.274"></a>
+<span class="sourceLineNo">275</span>        }<a name="line.275"></a>
+<span class="sourceLineNo">276</span><a name="line.276"></a>
+<span class="sourceLineNo">277</span>        return true;<a name="line.277"></a>
+<span class="sourceLineNo">278</span>    }<a name="line.278"></a>
+<span class="sourceLineNo">279</span><a name="line.279"></a>
+<span class="sourceLineNo">280</span>    /**<a name="line.280"></a>
+<span class="sourceLineNo">281</span>     * Validate scheme. If schemes[] was initialized to a non null,<a name="line.281"></a>
+<span class="sourceLineNo">282</span>     * then only those scheme's are allowed.  Note this is slightly different<a name="line.282"></a>
+<span class="sourceLineNo">283</span>     * than for the constructor.<a name="line.283"></a>
+<span class="sourceLineNo">284</span>     * @param scheme The scheme to validate.  A &lt;code&gt;null&lt;/code&gt; value is considered<a name="line.284"></a>
+<span class="sourceLineNo">285</span>     * invalid.<a name="line.285"></a>
+<span class="sourceLineNo">286</span>     * @return true if valid.<a name="line.286"></a>
+<span class="sourceLineNo">287</span>     */<a name="line.287"></a>
+<span class="sourceLineNo">288</span>    protected boolean isValidScheme(String scheme) {<a name="line.288"></a>
+<span class="sourceLineNo">289</span>        if (scheme == null) {<a name="line.289"></a>
+<span class="sourceLineNo">290</span>            return false;<a name="line.290"></a>
+<span class="sourceLineNo">291</span>        }<a name="line.291"></a>
+<span class="sourceLineNo">292</span><a name="line.292"></a>
+<span class="sourceLineNo">293</span>        if (!SCHEME_PATTERN.matcher(scheme).matches()) {<a name="line.293"></a>
+<span class="sourceLineNo">294</span>            return false;<a name="line.294"></a>
+<span class="sourceLineNo">295</span>        }<a name="line.295"></a>
+<span class="sourceLineNo">296</span><a name="line.296"></a>
+<span class="sourceLineNo">297</span>        if (options.isOff(ALLOW_ALL_SCHEMES) &amp;&amp; !allowedSchemes.contains(scheme)) {<a name="line.297"></a>
+<span class="sourceLineNo">298</span>            return false;<a name="line.298"></a>
+<span class="sourceLineNo">299</span>        }<a name="line.299"></a>
+<span class="sourceLineNo">300</span><a name="line.300"></a>
+<span class="sourceLineNo">301</span>        return true;<a name="line.301"></a>
+<span class="sourceLineNo">302</span>    }<a name="line.302"></a>
+<span class="sourceLineNo">303</span><a name="line.303"></a>
+<span class="sourceLineNo">304</span>    /**<a name="line.304"></a>
+<span class="sourceLineNo">305</span>     * Returns true if the authority is properly formatted.  An authority is the combination<a name="line.305"></a>
+<span class="sourceLineNo">306</span>     * of hostname and port.  A &lt;code&gt;null&lt;/code&gt; authority value is considered invalid.<a name="line.306"></a>
+<span class="sourceLineNo">307</span>     * @param authority Authority value to validate.<a name="line.307"></a>
+<span class="sourceLineNo">308</span>     * @return true if authority (hostname and port) is valid.<a name="line.308"></a>
+<span class="sourceLineNo">309</span>     */<a name="line.309"></a>
+<span class="sourceLineNo">310</span>    protected boolean isValidAuthority(String authority) {<a name="line.310"></a>
+<span class="sourceLineNo">311</span>        if (authority == null) {<a name="line.311"></a>
+<span class="sourceLineNo">312</span>            return false;<a name="line.312"></a>
+<span class="sourceLineNo">313</span>        }<a name="line.313"></a>
+<span class="sourceLineNo">314</span><a name="line.314"></a>
+<span class="sourceLineNo">315</span>        InetAddressValidator inetAddressValidator =<a name="line.315"></a>
+<span class="sourceLineNo">316</span>                InetAddressValidator.getInstance();<a name="line.316"></a>
+<span class="sourceLineNo">317</span><a name="line.317"></a>
+<span class="sourceLineNo">318</span>        Matcher authorityMatcher = AUTHORITY_PATTERN.matcher(authority);<a name="line.318"></a>
+<span class="sourceLineNo">319</span>        if (!authorityMatcher.matches()) {<a name="line.319"></a>
+<span class="sourceLineNo">320</span>            return false;<a name="line.320"></a>
+<span class="sourceLineNo">321</span>        }<a name="line.321"></a>
+<span class="sourceLineNo">322</span><a name="line.322"></a>
+<span class="sourceLineNo">323</span>        boolean hostname = false;<a name="line.323"></a>
+<span class="sourceLineNo">324</span>        // check if authority is IP address or hostname<a name="line.324"></a>
+<span class="sourceLineNo">325</span>        String hostIP = authorityMatcher.group(PARSE_AUTHORITY_HOST_IP);<a name="line.325"></a>
+<span class="sourceLineNo">326</span>        boolean ipV4Address = inetAddressValidator.isValid(hostIP);<a name="line.326"></a>
+<span class="sourceLineNo">327</span><a name="line.327"></a>
+<span class="sourceLineNo">328</span>        if (!ipV4Address) {<a name="line.328"></a>
+<span class="sourceLineNo">329</span>            // Domain is hostname name<a name="line.329"></a>
+<span class="sourceLineNo">330</span>            hostname = DOMAIN_PATTERN.matcher(hostIP).matches();<a name="line.330"></a>
+<span class="sourceLineNo">331</span>        }<a name="line.331"></a>
+<span class="sourceLineNo">332</span><a name="line.332"></a>
+<span class="sourceLineNo">333</span>        //rightmost hostname will never start with a digit.<a name="line.333"></a>
+<span class="sourceLineNo">334</span>        if (hostname) {<a name="line.334"></a>
+<span class="sourceLineNo">335</span>            // LOW-TECH FIX FOR VALIDATOR-202<a name="line.335"></a>
+<span class="sourceLineNo">336</span>            // TODO: Rewrite to use ArrayList and .add semantics: see VALIDATOR-203<a name="line.336"></a>
+<span class="sourceLineNo">337</span>            char[] chars = hostIP.toCharArray();<a name="line.337"></a>
+<span class="sourceLineNo">338</span>            int size = 1;<a name="line.338"></a>
+<span class="sourceLineNo">339</span>            for(int i=0; i&lt;chars.length; i++) {<a name="line.339"></a>
+<span class="sourceLineNo">340</span>                if(chars[i] == '.') {<a name="line.340"></a>
+<span class="sourceLineNo">341</span>                    size++;<a name="line.341"></a>
+<span class="sourceLineNo">342</span>                }<a name="line.342"></a>
+<span class="sourceLineNo">343</span>            }<a name="line.343"></a>
+<span class="sourceLineNo">344</span>            String[] domainSegment = new String[size];<a name="line.344"></a>
+<span class="sourceLineNo">345</span>            boolean match = true;<a name="line.345"></a>
+<span class="sourceLineNo">346</span>            int segmentCount = 0;<a name="line.346"></a>
+<span class="sourceLineNo">347</span>            int segmentLength = 0;<a name="line.347"></a>
+<span class="sourceLineNo">348</span><a name="line.348"></a>
+<span class="sourceLineNo">349</span>            while (match) {<a name="line.349"></a>
+<span class="sourceLineNo">350</span>                Matcher atomMatcher = ATOM_PATTERN.matcher(hostIP);<a name="line.350"></a>
+<span class="sourceLineNo">351</span>                match = atomMatcher.matches();<a name="line.351"></a>
+<span class="sourceLineNo">352</span>                if (match) {<a name="line.352"></a>
+<span class="sourceLineNo">353</span>                    domainSegment[segmentCount] = atomMatcher.group(1);<a name="line.353"></a>
+<span class="sourceLineNo">354</span>                    segmentLength = domainSegment[segmentCount].length() + 1;<a name="line.354"></a>
+<span class="sourceLineNo">355</span>                    hostIP =<a name="line.355"></a>
+<span class="sourceLineNo">356</span>                            (segmentLength &gt;= hostIP.length())<a name="line.356"></a>
+<span class="sourceLineNo">357</span>                            ? ""<a name="line.357"></a>
+<span class="sourceLineNo">358</span>                            : hostIP.substring(segmentLength);<a name="line.358"></a>
+<span class="sourceLineNo">359</span><a name="line.359"></a>
+<span class="sourceLineNo">360</span>                    segmentCount++;<a name="line.360"></a>
+<span class="sourceLineNo">361</span>                }<a name="line.361"></a>
+<span class="sourceLineNo">362</span>            }<a name="line.362"></a>
+<span class="sourceLineNo">363</span>            String topLevel = domainSegment[segmentCount - 1];<a name="line.363"></a>
+<span class="sourceLineNo">364</span>            if (topLevel.length() &lt; 2 || topLevel.length() &gt; 4) { // CHECKSTYLE IGNORE MagicNumber (deprecated code)<a name="line.364"></a>
+<span class="sourceLineNo">365</span>                return false;<a name="line.365"></a>
+<span class="sourceLineNo">366</span>            }<a name="line.366"></a>
+<span class="sourceLineNo">367</span><a name="line.367"></a>
+<span class="sourceLineNo">368</span>            // First letter of top level must be a alpha<a name="line.368"></a>
+<span class="sourceLineNo">369</span>            if (!ALPHA_PATTERN.matcher(topLevel.substring(0, 1)).matches()) {<a name="line.369"></a>
+<span class="sourceLineNo">370</span>                return false;<a name="line.370"></a>
+<span class="sourceLineNo">371</span>            }<a name="line.371"></a>
+<span class="sourceLineNo">372</span><a name="line.372"></a>
+<span class="sourceLineNo">373</span>            // Make sure there's a host name preceding the authority.<a name="line.373"></a>
+<span class="sourceLineNo">374</span>            if (segmentCount &lt; 2) {<a name="line.374"></a>
+<span class="sourceLineNo">375</span>                return false;<a name="line.375"></a>
+<span class="sourceLineNo">376</span>            }<a name="line.376"></a>
+<span class="sourceLineNo">377</span>        }<a name="line.377"></a>
+<span class="sourceLineNo">378</span><a name="line.378"></a>
+<span class="sourceLineNo">379</span>        if (!hostname &amp;&amp; !ipV4Address) {<a name="line.379"></a>
+<span class="sourceLineNo">380</span>            return false;<a name="line.380"></a>
+<span class="sourceLineNo">381</span>        }<a name="line.381"></a>
+<span class="sourceLineNo">382</span><a name="line.382"></a>
+<span class="sourceLineNo">383</span>        String port = authorityMatcher.group(PARSE_AUTHORITY_PORT);<a name="line.383"></a>
+<span class="sourceLineNo">384</span>        if (port != null &amp;&amp; !PORT_PATTERN.matcher(port).matches()) {<a name="line.384"></a>
+<span class="sourceLineNo">385</span>            return false;<a name="line.385"></a>
+<span class="sourceLineNo">386</span>        }<a name="line.386"></a>
+<span class="sourceLineNo">387</span><a name="line.387"></a>
+<span class="sourceLineNo">388</span>        String extra = authorityMatcher.group(PARSE_AUTHORITY_EXTRA);<a name="line.388"></a>
+<span class="sourceLineNo">389</span>        if (!GenericValidator.isBlankOrNull(extra)) {<a name="line.389"></a>
+<span class="sourceLineNo">390</span>            return false;<a name="line.390"></a>
+<span class="sourceLineNo">391</span>        }<a name="line.391"></a>
+<span class="sourceLineNo">392</span><a name="line.392"></a>
+<span class="sourceLineNo">393</span>        return true;<a name="line.393"></a>
+<span class="sourceLineNo">394</span>    }<a name="line.394"></a>
+<span class="sourceLineNo">395</span><a name="line.395"></a>
+<span class="sourceLineNo">396</span>    /**<a name="line.396"></a>
+<span class="sourceLineNo">397</span>     * Returns true if the path is valid.  A &lt;code&gt;null&lt;/code&gt; value is considered invalid.<a name="line.397"></a>
+<span class="sourceLineNo">398</span>     * @param path Path value to validate.<a name="line.398"></a>
+<span class="sourceLineNo">399</span>     * @return true if path is valid.<a name="line.399"></a>
+<span class="sourceLineNo">400</span>     */<a name="line.400"></a>
+<span class="sourceLineNo">401</span>    protected boolean isValidPath(String path) {<a name="line.401"></a>
+<span class="sourceLineNo">402</span>        if (path == null) {<a name="line.402"></a>
+<span class="sourceLineNo">403</span>            return false;<a name="line.403"></a>
+<span class="sourceLineNo">404</span>        }<a name="line.404"></a>
+<span class="sourceLineNo">405</span><a name="line.405"></a>
+<span class="sourceLineNo">406</span>        if (!PATH_PATTERN.matcher(path).matches()) {<a name="line.406"></a>
+<span class="sourceLineNo">407</span>            return false;<a name="line.407"></a>
+<span class="sourceLineNo">408</span>        }<a name="line.408"></a>
+<span class="sourceLineNo">409</span><a name="line.409"></a>
+<span class="sourceLineNo">410</span>        int slash2Count = countToken("//", path);<a name="line.410"></a>
+<span class="sourceLineNo">411</span>        if (options.isOff(ALLOW_2_SLASHES) &amp;&amp; (slash2Count &gt; 0)) {<a name="line.411"></a>
+<span class="sourceLineNo">412</span>            return false;<a name="line.412"></a>
+<span class="sourceLineNo">413</span>        }<a name="line.413"></a>
+<span class="sourceLineNo">414</span><a name="line.414"></a>
+<span class="sourceLineNo">415</span>        int slashCount = countToken("/", path);<a name="line.415"></a>
+<span class="sourceLineNo">416</span>        int dot2Count = countToken("..", path);<a name="line.416"></a>
+<span class="sourceLineNo">417</span>        if (dot2Count &gt; 0 &amp;&amp; (slashCount - slash2Count - 1) &lt;= dot2Count){<a name="line.417"></a>
+<span class="sourceLineNo">418</span>            return false;<a name="line.418"></a>
+<span class="sourceLineNo">419</span>        }<a name="line.419"></a>
+<span class="sourceLineNo">420</span><a name="line.420"></a>
+<span class="sourceLineNo">421</span>        return true;<a name="line.421"></a>
+<span class="sourceLineNo">422</span>    }<a name="line.422"></a>
+<span class="sourceLineNo">423</span><a name="line.423"></a>
+<span class="sourceLineNo">424</span>    /**<a name="line.424"></a>
+<span class="sourceLineNo">425</span>     * Returns true if the query is null or it's a properly formatted query string.<a name="line.425"></a>
+<span class="sourceLineNo">426</span>     * @param query Query value to validate.<a name="line.426"></a>
+<span class="sourceLineNo">427</span>     * @return true if query is valid.<a name="line.427"></a>
+<span class="sourceLineNo">428</span>     */<a name="line.428"></a>
+<span class="sourceLineNo">429</span>    protected boolean isValidQuery(String query) {<a name="line.429"></a>
+<span class="sourceLineNo">430</span>        if (query == null) {<a name="line.430"></a>
+<span class="sourceLineNo">431</span>            return true;<a name="line.431"></a>
+<span class="sourceLineNo">432</span>        }<a name="line.432"></a>
+<span class="sourceLineNo">433</span><a name="line.433"></a>
+<span class="sourceLineNo">434</span>        return QUERY_PATTERN.matcher(query).matches();<a name="line.434"></a>
+<span class="sourceLineNo">435</span>    }<a name="line.435"></a>
+<span class="sourceLineNo">436</span><a name="line.436"></a>
+<span class="sourceLineNo">437</span>    /**<a name="line.437"></a>
+<span class="sourceLineNo">438</span>     * Returns true if the given fragment is null or fragments are allowed.<a name="line.438"></a>
+<span class="sourceLineNo">439</span>     * @param fragment Fragment value to validate.<a name="line.439"></a>
+<span class="sourceLineNo">440</span>     * @return true if fragment is valid.<a name="line.440"></a>
+<span class="sourceLineNo">441</span>     */<a name="line.441"></a>
+<span class="sourceLineNo">442</span>    protected boolean isValidFragment(String fragment) {<a name="line.442"></a>
+<span class="sourceLineNo">443</span>        if (fragment == null) {<a name="line.443"></a>
+<span class="sourceLineNo">444</span>            return true;<a name="line.444"></a>
+<span class="sourceLineNo">445</span>        }<a name="line.445"></a>
+<span class="sourceLineNo">446</span><a name="line.446"></a>
+<span class="sourceLineNo">447</span>        return options.isOff(NO_FRAGMENTS);<a name="line.447"></a>
+<span class="sourceLineNo">448</span>    }<a name="line.448"></a>
+<span class="sourceLineNo">449</span><a name="line.449"></a>
+<span class="sourceLineNo">450</span>    /**<a name="line.450"></a>
+<span class="sourceLineNo">451</span>     * Returns the number of times the token appears in the target.<a name="line.451"></a>
+<span class="sourceLineNo">452</span>     * @param token Token value to be counted.<a name="line.452"></a>
+<span class="sourceLineNo">453</span>     * @param target Target value to count tokens in.<a name="line.453"></a>
+<span class="sourceLineNo">454</span>     * @return the number of tokens.<a name="line.454"></a>
+<span class="sourceLineNo">455</span>     */<a name="line.455"></a>
+<span class="sourceLineNo">456</span>    protected int countToken(String token, String target) {<a name="line.456"></a>
+<span class="sourceLineNo">457</span>        int tokenIndex = 0;<a name="line.457"></a>
+<span class="sourceLineNo">458</span>        int count = 0;<a name="line.458"></a>
+<span class="sourceLineNo">459</span>        while (tokenIndex != -1) {<a name="line.459"></a>
+<span class="sourceLineNo">460</span>            tokenIndex = target.indexOf(token, tokenIndex);<a name="line.460"></a>
+<span class="sourceLineNo">461</span>            if (tokenIndex &gt; -1) {<a name="line.461"></a>
+<span class="sourceLineNo">462</span>                tokenIndex++;<a name="line.462"></a>
+<span class="sourceLineNo">463</span>                count++;<a name="line.463"></a>
+<span class="sourceLineNo">464</span>            }<a name="line.464"></a>
+<span class="sourceLineNo">465</span>        }<a name="line.465"></a>
+<span class="sourceLineNo">466</span>        return count;<a name="line.466"></a>
+<span class="sourceLineNo">467</span>    }<a name="line.467"></a>
+<span class="sourceLineNo">468</span>}<a name="line.468"></a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</pre>
+</div>
+</body>
+</html>

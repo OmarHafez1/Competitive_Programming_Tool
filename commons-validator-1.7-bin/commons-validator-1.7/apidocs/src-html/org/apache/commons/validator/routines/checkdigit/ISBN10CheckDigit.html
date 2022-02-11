@@ -1,0 +1,187 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en">
+<head>
+<title>Source code</title>
+<link rel="stylesheet" type="text/css" href="../../../../../../../stylesheet.css" title="Style">
+</head>
+<body>
+<div class="sourceContainer">
+<pre><span class="sourceLineNo">001</span>/*<a name="line.1"></a>
+<span class="sourceLineNo">002</span> * Licensed to the Apache Software Foundation (ASF) under one or more<a name="line.2"></a>
+<span class="sourceLineNo">003</span> * contributor license agreements.  See the NOTICE file distributed with<a name="line.3"></a>
+<span class="sourceLineNo">004</span> * this work for additional information regarding copyright ownership.<a name="line.4"></a>
+<span class="sourceLineNo">005</span> * The ASF licenses this file to You under the Apache License, Version 2.0<a name="line.5"></a>
+<span class="sourceLineNo">006</span> * (the "License"); you may not use this file except in compliance with<a name="line.6"></a>
+<span class="sourceLineNo">007</span> * the License.  You may obtain a copy of the License at<a name="line.7"></a>
+<span class="sourceLineNo">008</span> *<a name="line.8"></a>
+<span class="sourceLineNo">009</span> *      http://www.apache.org/licenses/LICENSE-2.0<a name="line.9"></a>
+<span class="sourceLineNo">010</span> *<a name="line.10"></a>
+<span class="sourceLineNo">011</span> * Unless required by applicable law or agreed to in writing, software<a name="line.11"></a>
+<span class="sourceLineNo">012</span> * distributed under the License is distributed on an "AS IS" BASIS,<a name="line.12"></a>
+<span class="sourceLineNo">013</span> * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.<a name="line.13"></a>
+<span class="sourceLineNo">014</span> * See the License for the specific language governing permissions and<a name="line.14"></a>
+<span class="sourceLineNo">015</span> * limitations under the License.<a name="line.15"></a>
+<span class="sourceLineNo">016</span> */<a name="line.16"></a>
+<span class="sourceLineNo">017</span>package org.apache.commons.validator.routines.checkdigit;<a name="line.17"></a>
+<span class="sourceLineNo">018</span><a name="line.18"></a>
+<span class="sourceLineNo">019</span>/**<a name="line.19"></a>
+<span class="sourceLineNo">020</span> * Modulus 11 &lt;b&gt;ISBN-10&lt;/b&gt; Check Digit calculation/validation.<a name="line.20"></a>
+<span class="sourceLineNo">021</span> * &lt;p&gt;<a name="line.21"></a>
+<span class="sourceLineNo">022</span> * ISBN-10 Numbers are a numeric code except for the last (check) digit<a name="line.22"></a>
+<span class="sourceLineNo">023</span> * which can have a value of "X".<a name="line.23"></a>
+<span class="sourceLineNo">024</span> * &lt;p&gt;<a name="line.24"></a>
+<span class="sourceLineNo">025</span> * Check digit calculation is based on &lt;i&gt;modulus 11&lt;/i&gt; with digits being weighted<a name="line.25"></a>
+<span class="sourceLineNo">026</span> * based by their position, from right to left  with the first digit being weighted<a name="line.26"></a>
+<span class="sourceLineNo">027</span> * 1, the second 2 and so on. If the check digit is calculated as "10" it is converted<a name="line.27"></a>
+<span class="sourceLineNo">028</span> * to "X".<a name="line.28"></a>
+<span class="sourceLineNo">029</span> * &lt;p&gt;<a name="line.29"></a>
+<span class="sourceLineNo">030</span> * &lt;b&gt;N.B.&lt;/b&gt; From 1st January 2007 the book industry will start to use a new 13 digit<a name="line.30"></a>
+<span class="sourceLineNo">031</span> * ISBN number (rather than this 10 digit ISBN number) which uses the EAN-13 / UPC<a name="line.31"></a>
+<span class="sourceLineNo">032</span> * (see {@link EAN13CheckDigit}) standard.<a name="line.32"></a>
+<span class="sourceLineNo">033</span> * &lt;p&gt;<a name="line.33"></a>
+<span class="sourceLineNo">034</span> * For further information see:<a name="line.34"></a>
+<span class="sourceLineNo">035</span> * &lt;ul&gt;<a name="line.35"></a>
+<span class="sourceLineNo">036</span> *   &lt;li&gt;&lt;a href="http://en.wikipedia.org/wiki/ISBN"&gt;Wikipedia - International<a name="line.36"></a>
+<span class="sourceLineNo">037</span> *       Standard Book Number (ISBN)&lt;/a&gt;.&lt;/li&gt;<a name="line.37"></a>
+<span class="sourceLineNo">038</span> *   &lt;li&gt;&lt;a href="http://www.isbn.org/standards/home/isbn/transition.asp"&gt;ISBN-13<a name="line.38"></a>
+<span class="sourceLineNo">039</span> *       Transition details&lt;/a&gt;.&lt;/li&gt;<a name="line.39"></a>
+<span class="sourceLineNo">040</span> * &lt;/ul&gt;<a name="line.40"></a>
+<span class="sourceLineNo">041</span> *<a name="line.41"></a>
+<span class="sourceLineNo">042</span> * @version $Revision$<a name="line.42"></a>
+<span class="sourceLineNo">043</span> * @since Validator 1.4<a name="line.43"></a>
+<span class="sourceLineNo">044</span> */<a name="line.44"></a>
+<span class="sourceLineNo">045</span>public final class ISBN10CheckDigit extends ModulusCheckDigit {<a name="line.45"></a>
+<span class="sourceLineNo">046</span><a name="line.46"></a>
+<span class="sourceLineNo">047</span>    private static final long serialVersionUID = 8000855044504864964L;<a name="line.47"></a>
+<span class="sourceLineNo">048</span><a name="line.48"></a>
+<span class="sourceLineNo">049</span>    /** Singleton ISBN-10 Check Digit instance */<a name="line.49"></a>
+<span class="sourceLineNo">050</span>    public static final CheckDigit ISBN10_CHECK_DIGIT = new ISBN10CheckDigit();<a name="line.50"></a>
+<span class="sourceLineNo">051</span><a name="line.51"></a>
+<span class="sourceLineNo">052</span>    /**<a name="line.52"></a>
+<span class="sourceLineNo">053</span>     * Construct a modulus 11 Check Digit routine for ISBN-10.<a name="line.53"></a>
+<span class="sourceLineNo">054</span>     */<a name="line.54"></a>
+<span class="sourceLineNo">055</span>    public ISBN10CheckDigit() {<a name="line.55"></a>
+<span class="sourceLineNo">056</span>        super(11);  // CHECKSTYLE IGNORE MagicNumber<a name="line.56"></a>
+<span class="sourceLineNo">057</span>    }<a name="line.57"></a>
+<span class="sourceLineNo">058</span><a name="line.58"></a>
+<span class="sourceLineNo">059</span>    /**<a name="line.59"></a>
+<span class="sourceLineNo">060</span>     * Calculates the &lt;i&gt;weighted&lt;/i&gt; value of a charcter in the<a name="line.60"></a>
+<span class="sourceLineNo">061</span>     * code at a specified position.<a name="line.61"></a>
+<span class="sourceLineNo">062</span>     *<a name="line.62"></a>
+<span class="sourceLineNo">063</span>     * &lt;p&gt;For ISBN-10 (from right to left) digits are weighted<a name="line.63"></a>
+<span class="sourceLineNo">064</span>     * by their position.&lt;/p&gt;<a name="line.64"></a>
+<span class="sourceLineNo">065</span>     *<a name="line.65"></a>
+<span class="sourceLineNo">066</span>     * @param charValue The numeric value of the character.<a name="line.66"></a>
+<span class="sourceLineNo">067</span>     * @param leftPos The position of the character in the code, counting from left to right<a name="line.67"></a>
+<span class="sourceLineNo">068</span>     * @param rightPos The positionof the character in the code, counting from right to left<a name="line.68"></a>
+<span class="sourceLineNo">069</span>     * @return The weighted value of the character.<a name="line.69"></a>
+<span class="sourceLineNo">070</span>     */<a name="line.70"></a>
+<span class="sourceLineNo">071</span>    @Override<a name="line.71"></a>
+<span class="sourceLineNo">072</span>    protected int weightedValue(int charValue, int leftPos, int rightPos) {<a name="line.72"></a>
+<span class="sourceLineNo">073</span>        return charValue * rightPos;<a name="line.73"></a>
+<span class="sourceLineNo">074</span>    }<a name="line.74"></a>
+<span class="sourceLineNo">075</span><a name="line.75"></a>
+<span class="sourceLineNo">076</span>    /**<a name="line.76"></a>
+<span class="sourceLineNo">077</span>     * &lt;p&gt;Convert a character at a specified position to an<a name="line.77"></a>
+<span class="sourceLineNo">078</span>     * integer value.&lt;/p&gt;<a name="line.78"></a>
+<span class="sourceLineNo">079</span>     *<a name="line.79"></a>
+<span class="sourceLineNo">080</span>     * &lt;p&gt;Character 'X' check digit converted to 10.&lt;/p&gt;<a name="line.80"></a>
+<span class="sourceLineNo">081</span>     *<a name="line.81"></a>
+<span class="sourceLineNo">082</span>     * @param character The character to convert.<a name="line.82"></a>
+<span class="sourceLineNo">083</span>     * @param leftPos The position of the character in the code, counting from left to right<a name="line.83"></a>
+<span class="sourceLineNo">084</span>     * @param rightPos The position of the character in the code, counting from right to left<a name="line.84"></a>
+<span class="sourceLineNo">085</span>     * @return The integer value of the character.<a name="line.85"></a>
+<span class="sourceLineNo">086</span>     * @throws CheckDigitException if an error occurs.<a name="line.86"></a>
+<span class="sourceLineNo">087</span>     */<a name="line.87"></a>
+<span class="sourceLineNo">088</span>    @Override<a name="line.88"></a>
+<span class="sourceLineNo">089</span>    protected int toInt(char character, int leftPos, int rightPos)<a name="line.89"></a>
+<span class="sourceLineNo">090</span>            throws CheckDigitException {<a name="line.90"></a>
+<span class="sourceLineNo">091</span>        if (rightPos == 1 &amp;&amp; character == 'X') {<a name="line.91"></a>
+<span class="sourceLineNo">092</span>            return 10;  // CHECKSTYLE IGNORE MagicNumber<a name="line.92"></a>
+<span class="sourceLineNo">093</span>        }<a name="line.93"></a>
+<span class="sourceLineNo">094</span>        return super.toInt(character, leftPos, rightPos);<a name="line.94"></a>
+<span class="sourceLineNo">095</span>    }<a name="line.95"></a>
+<span class="sourceLineNo">096</span><a name="line.96"></a>
+<span class="sourceLineNo">097</span>    /**<a name="line.97"></a>
+<span class="sourceLineNo">098</span>     * &lt;p&gt;Convert an integer value to a character at a specified position.&lt;/p&gt;<a name="line.98"></a>
+<span class="sourceLineNo">099</span>     *<a name="line.99"></a>
+<span class="sourceLineNo">100</span>     * &lt;p&gt;Value '10' for position 1 (check digit) converted to 'X'.&lt;/p&gt;<a name="line.100"></a>
+<span class="sourceLineNo">101</span>     *<a name="line.101"></a>
+<span class="sourceLineNo">102</span>     * @param charValue The integer value of the character.<a name="line.102"></a>
+<span class="sourceLineNo">103</span>     * @return The converted character.<a name="line.103"></a>
+<span class="sourceLineNo">104</span>     * @throws CheckDigitException if an error occurs.<a name="line.104"></a>
+<span class="sourceLineNo">105</span>     */<a name="line.105"></a>
+<span class="sourceLineNo">106</span>    @Override<a name="line.106"></a>
+<span class="sourceLineNo">107</span>    protected String toCheckDigit(int charValue)<a name="line.107"></a>
+<span class="sourceLineNo">108</span>            throws CheckDigitException {<a name="line.108"></a>
+<span class="sourceLineNo">109</span>        if (charValue == 10) {  // CHECKSTYLE IGNORE MagicNumber<a name="line.109"></a>
+<span class="sourceLineNo">110</span>            return "X";<a name="line.110"></a>
+<span class="sourceLineNo">111</span>        }<a name="line.111"></a>
+<span class="sourceLineNo">112</span>        return super.toCheckDigit(charValue);<a name="line.112"></a>
+<span class="sourceLineNo">113</span>    }<a name="line.113"></a>
+<span class="sourceLineNo">114</span><a name="line.114"></a>
+<span class="sourceLineNo">115</span>}<a name="line.115"></a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</pre>
+</div>
+</body>
+</html>

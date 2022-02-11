@@ -1,0 +1,272 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en">
+<head>
+<title>Source code</title>
+<link rel="stylesheet" type="text/css" href="../../../../../../stylesheet.css" title="Style">
+</head>
+<body>
+<div class="sourceContainer">
+<pre><span class="sourceLineNo">001</span>/*<a name="line.1"></a>
+<span class="sourceLineNo">002</span> * Licensed to the Apache Software Foundation (ASF) under one or more<a name="line.2"></a>
+<span class="sourceLineNo">003</span> * contributor license agreements.  See the NOTICE file distributed with<a name="line.3"></a>
+<span class="sourceLineNo">004</span> * this work for additional information regarding copyright ownership.<a name="line.4"></a>
+<span class="sourceLineNo">005</span> * The ASF licenses this file to You under the Apache License, Version 2.0<a name="line.5"></a>
+<span class="sourceLineNo">006</span> * (the "License"); you may not use this file except in compliance with<a name="line.6"></a>
+<span class="sourceLineNo">007</span> * the License.  You may obtain a copy of the License at<a name="line.7"></a>
+<span class="sourceLineNo">008</span> *<a name="line.8"></a>
+<span class="sourceLineNo">009</span> *      http://www.apache.org/licenses/LICENSE-2.0<a name="line.9"></a>
+<span class="sourceLineNo">010</span> *<a name="line.10"></a>
+<span class="sourceLineNo">011</span> * Unless required by applicable law or agreed to in writing, software<a name="line.11"></a>
+<span class="sourceLineNo">012</span> * distributed under the License is distributed on an "AS IS" BASIS,<a name="line.12"></a>
+<span class="sourceLineNo">013</span> * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.<a name="line.13"></a>
+<span class="sourceLineNo">014</span> * See the License for the specific language governing permissions and<a name="line.14"></a>
+<span class="sourceLineNo">015</span> * limitations under the License.<a name="line.15"></a>
+<span class="sourceLineNo">016</span> */<a name="line.16"></a>
+<span class="sourceLineNo">017</span>package org.apache.commons.validator.util;<a name="line.17"></a>
+<span class="sourceLineNo">018</span><a name="line.18"></a>
+<span class="sourceLineNo">019</span>import java.lang.reflect.InvocationTargetException;<a name="line.19"></a>
+<span class="sourceLineNo">020</span>import java.util.Collection;<a name="line.20"></a>
+<span class="sourceLineNo">021</span>import java.util.HashMap;<a name="line.21"></a>
+<span class="sourceLineNo">022</span>import java.util.Iterator;<a name="line.22"></a>
+<span class="sourceLineNo">023</span>import java.util.Map;<a name="line.23"></a>
+<span class="sourceLineNo">024</span>import java.util.Map.Entry;<a name="line.24"></a>
+<span class="sourceLineNo">025</span><a name="line.25"></a>
+<span class="sourceLineNo">026</span>import org.apache.commons.beanutils.PropertyUtils;<a name="line.26"></a>
+<span class="sourceLineNo">027</span>import org.apache.commons.collections.FastHashMap; // DEPRECATED<a name="line.27"></a>
+<span class="sourceLineNo">028</span>import org.apache.commons.logging.Log;<a name="line.28"></a>
+<span class="sourceLineNo">029</span>import org.apache.commons.logging.LogFactory;<a name="line.29"></a>
+<span class="sourceLineNo">030</span>import org.apache.commons.validator.Arg;<a name="line.30"></a>
+<span class="sourceLineNo">031</span>import org.apache.commons.validator.Msg;<a name="line.31"></a>
+<span class="sourceLineNo">032</span>import org.apache.commons.validator.Var;<a name="line.32"></a>
+<span class="sourceLineNo">033</span><a name="line.33"></a>
+<span class="sourceLineNo">034</span>/**<a name="line.34"></a>
+<span class="sourceLineNo">035</span> * Basic utility methods.<a name="line.35"></a>
+<span class="sourceLineNo">036</span> * &lt;p&gt;<a name="line.36"></a>
+<span class="sourceLineNo">037</span> * The use of FastHashMap is deprecated and will be replaced in a future<a name="line.37"></a>
+<span class="sourceLineNo">038</span> * release.<a name="line.38"></a>
+<span class="sourceLineNo">039</span> * &lt;/p&gt;<a name="line.39"></a>
+<span class="sourceLineNo">040</span> *<a name="line.40"></a>
+<span class="sourceLineNo">041</span> * @version $Revision$<a name="line.41"></a>
+<span class="sourceLineNo">042</span> */<a name="line.42"></a>
+<span class="sourceLineNo">043</span>public class ValidatorUtils {<a name="line.43"></a>
+<span class="sourceLineNo">044</span><a name="line.44"></a>
+<span class="sourceLineNo">045</span>    private static final Log LOG = LogFactory.getLog(ValidatorUtils.class);<a name="line.45"></a>
+<span class="sourceLineNo">046</span><a name="line.46"></a>
+<span class="sourceLineNo">047</span>    /**<a name="line.47"></a>
+<span class="sourceLineNo">048</span>     * &lt;p&gt;Replace part of a &lt;code&gt;String&lt;/code&gt; with another value.&lt;/p&gt;<a name="line.48"></a>
+<span class="sourceLineNo">049</span>     *<a name="line.49"></a>
+<span class="sourceLineNo">050</span>     * @param value &lt;code&gt;String&lt;/code&gt; to perform the replacement on.<a name="line.50"></a>
+<span class="sourceLineNo">051</span>     * @param key The name of the constant.<a name="line.51"></a>
+<span class="sourceLineNo">052</span>     * @param replaceValue The value of the constant.<a name="line.52"></a>
+<span class="sourceLineNo">053</span>     *<a name="line.53"></a>
+<span class="sourceLineNo">054</span>     * @return The modified value.<a name="line.54"></a>
+<span class="sourceLineNo">055</span>     */<a name="line.55"></a>
+<span class="sourceLineNo">056</span>    public static String replace(String value, String key, String replaceValue) {<a name="line.56"></a>
+<span class="sourceLineNo">057</span><a name="line.57"></a>
+<span class="sourceLineNo">058</span>        if (value == null || key == null || replaceValue == null) {<a name="line.58"></a>
+<span class="sourceLineNo">059</span>            return value;<a name="line.59"></a>
+<span class="sourceLineNo">060</span>        }<a name="line.60"></a>
+<span class="sourceLineNo">061</span><a name="line.61"></a>
+<span class="sourceLineNo">062</span>        int pos = value.indexOf(key);<a name="line.62"></a>
+<span class="sourceLineNo">063</span><a name="line.63"></a>
+<span class="sourceLineNo">064</span>        if (pos &lt; 0) {<a name="line.64"></a>
+<span class="sourceLineNo">065</span>            return value;<a name="line.65"></a>
+<span class="sourceLineNo">066</span>        }<a name="line.66"></a>
+<span class="sourceLineNo">067</span><a name="line.67"></a>
+<span class="sourceLineNo">068</span>        int length = value.length();<a name="line.68"></a>
+<span class="sourceLineNo">069</span>        int start = pos;<a name="line.69"></a>
+<span class="sourceLineNo">070</span>        int end = pos + key.length();<a name="line.70"></a>
+<span class="sourceLineNo">071</span><a name="line.71"></a>
+<span class="sourceLineNo">072</span>        if (length == key.length()) {<a name="line.72"></a>
+<span class="sourceLineNo">073</span>            value = replaceValue;<a name="line.73"></a>
+<span class="sourceLineNo">074</span><a name="line.74"></a>
+<span class="sourceLineNo">075</span>        } else if (end == length) {<a name="line.75"></a>
+<span class="sourceLineNo">076</span>            value = value.substring(0, start) + replaceValue;<a name="line.76"></a>
+<span class="sourceLineNo">077</span><a name="line.77"></a>
+<span class="sourceLineNo">078</span>        } else {<a name="line.78"></a>
+<span class="sourceLineNo">079</span>            value =<a name="line.79"></a>
+<span class="sourceLineNo">080</span>                    value.substring(0, start)<a name="line.80"></a>
+<span class="sourceLineNo">081</span>                    + replaceValue<a name="line.81"></a>
+<span class="sourceLineNo">082</span>                    + replace(value.substring(end), key, replaceValue);<a name="line.82"></a>
+<span class="sourceLineNo">083</span>        }<a name="line.83"></a>
+<span class="sourceLineNo">084</span><a name="line.84"></a>
+<span class="sourceLineNo">085</span>        return value;<a name="line.85"></a>
+<span class="sourceLineNo">086</span>    }<a name="line.86"></a>
+<span class="sourceLineNo">087</span><a name="line.87"></a>
+<span class="sourceLineNo">088</span>    /**<a name="line.88"></a>
+<span class="sourceLineNo">089</span>     * Convenience method for getting a value from a bean property as a<a name="line.89"></a>
+<span class="sourceLineNo">090</span>     * &lt;code&gt;String&lt;/code&gt;.  If the property is a &lt;code&gt;String[]&lt;/code&gt; or<a name="line.90"></a>
+<span class="sourceLineNo">091</span>     * &lt;code&gt;Collection&lt;/code&gt; and it is empty, an empty &lt;code&gt;String&lt;/code&gt;<a name="line.91"></a>
+<span class="sourceLineNo">092</span>     * "" is returned.  Otherwise, property.toString() is returned.  This method<a name="line.92"></a>
+<span class="sourceLineNo">093</span>     * may return &lt;code&gt;null&lt;/code&gt; if there was an error retrieving the<a name="line.93"></a>
+<span class="sourceLineNo">094</span>     * property.<a name="line.94"></a>
+<span class="sourceLineNo">095</span>     *<a name="line.95"></a>
+<span class="sourceLineNo">096</span>     * @param bean The bean object.<a name="line.96"></a>
+<span class="sourceLineNo">097</span>     * @param property The name of the property to access.<a name="line.97"></a>
+<span class="sourceLineNo">098</span>     *<a name="line.98"></a>
+<span class="sourceLineNo">099</span>     * @return The value of the property.<a name="line.99"></a>
+<span class="sourceLineNo">100</span>     */<a name="line.100"></a>
+<span class="sourceLineNo">101</span>    public static String getValueAsString(Object bean, String property) {<a name="line.101"></a>
+<span class="sourceLineNo">102</span>        Object value = null;<a name="line.102"></a>
+<span class="sourceLineNo">103</span><a name="line.103"></a>
+<span class="sourceLineNo">104</span>        try {<a name="line.104"></a>
+<span class="sourceLineNo">105</span>            value = PropertyUtils.getProperty(bean, property);<a name="line.105"></a>
+<span class="sourceLineNo">106</span><a name="line.106"></a>
+<span class="sourceLineNo">107</span>        } catch(IllegalAccessException e) {<a name="line.107"></a>
+<span class="sourceLineNo">108</span>            LOG.error(e.getMessage(), e);<a name="line.108"></a>
+<span class="sourceLineNo">109</span>        } catch(InvocationTargetException e) {<a name="line.109"></a>
+<span class="sourceLineNo">110</span>            LOG.error(e.getMessage(), e);<a name="line.110"></a>
+<span class="sourceLineNo">111</span>        } catch(NoSuchMethodException e) {<a name="line.111"></a>
+<span class="sourceLineNo">112</span>            LOG.error(e.getMessage(), e);<a name="line.112"></a>
+<span class="sourceLineNo">113</span>        }<a name="line.113"></a>
+<span class="sourceLineNo">114</span><a name="line.114"></a>
+<span class="sourceLineNo">115</span>        if (value == null) {<a name="line.115"></a>
+<span class="sourceLineNo">116</span>            return null;<a name="line.116"></a>
+<span class="sourceLineNo">117</span>        }<a name="line.117"></a>
+<span class="sourceLineNo">118</span><a name="line.118"></a>
+<span class="sourceLineNo">119</span>        if (value instanceof String[]) {<a name="line.119"></a>
+<span class="sourceLineNo">120</span>            return ((String[]) value).length &gt; 0 ? value.toString() : "";<a name="line.120"></a>
+<span class="sourceLineNo">121</span><a name="line.121"></a>
+<span class="sourceLineNo">122</span>        } else if (value instanceof Collection) {<a name="line.122"></a>
+<span class="sourceLineNo">123</span>            return ((Collection&lt;?&gt;) value).isEmpty() ? "" : value.toString();<a name="line.123"></a>
+<span class="sourceLineNo">124</span><a name="line.124"></a>
+<span class="sourceLineNo">125</span>        } else {<a name="line.125"></a>
+<span class="sourceLineNo">126</span>            return value.toString();<a name="line.126"></a>
+<span class="sourceLineNo">127</span>        }<a name="line.127"></a>
+<span class="sourceLineNo">128</span><a name="line.128"></a>
+<span class="sourceLineNo">129</span>    }<a name="line.129"></a>
+<span class="sourceLineNo">130</span><a name="line.130"></a>
+<span class="sourceLineNo">131</span>    /**<a name="line.131"></a>
+<span class="sourceLineNo">132</span>     * Makes a deep copy of a &lt;code&gt;FastHashMap&lt;/code&gt; if the values<a name="line.132"></a>
+<span class="sourceLineNo">133</span>     * are &lt;code&gt;Msg&lt;/code&gt;, &lt;code&gt;Arg&lt;/code&gt;,<a name="line.133"></a>
+<span class="sourceLineNo">134</span>     * or &lt;code&gt;Var&lt;/code&gt;.  Otherwise it is a shallow copy.<a name="line.134"></a>
+<span class="sourceLineNo">135</span>     *<a name="line.135"></a>
+<span class="sourceLineNo">136</span>     * @param map &lt;code&gt;FastHashMap&lt;/code&gt; to copy.<a name="line.136"></a>
+<span class="sourceLineNo">137</span>     * @return FastHashMap A copy of the &lt;code&gt;FastHashMap&lt;/code&gt; that was<a name="line.137"></a>
+<span class="sourceLineNo">138</span>     * passed in.<a name="line.138"></a>
+<span class="sourceLineNo">139</span>     * @deprecated This method is not part of Validator's public API.  Validator<a name="line.139"></a>
+<span class="sourceLineNo">140</span>     * will use it internally until FastHashMap references are removed.  Use<a name="line.140"></a>
+<span class="sourceLineNo">141</span>     * copyMap() instead.<a name="line.141"></a>
+<span class="sourceLineNo">142</span>     */<a name="line.142"></a>
+<span class="sourceLineNo">143</span>    @Deprecated<a name="line.143"></a>
+<span class="sourceLineNo">144</span>    public static FastHashMap copyFastHashMap(FastHashMap map) {<a name="line.144"></a>
+<span class="sourceLineNo">145</span>        FastHashMap results = new FastHashMap();<a name="line.145"></a>
+<span class="sourceLineNo">146</span><a name="line.146"></a>
+<span class="sourceLineNo">147</span>        @SuppressWarnings("unchecked") // FastHashMap is not generic<a name="line.147"></a>
+<span class="sourceLineNo">148</span>        Iterator&lt;Entry&lt;String, ?&gt;&gt; i = map.entrySet().iterator();<a name="line.148"></a>
+<span class="sourceLineNo">149</span>        while (i.hasNext()) {<a name="line.149"></a>
+<span class="sourceLineNo">150</span>            Entry&lt;String, ?&gt; entry = i.next();<a name="line.150"></a>
+<span class="sourceLineNo">151</span>            String key = entry.getKey();<a name="line.151"></a>
+<span class="sourceLineNo">152</span>            Object value = entry.getValue();<a name="line.152"></a>
+<span class="sourceLineNo">153</span><a name="line.153"></a>
+<span class="sourceLineNo">154</span>            if (value instanceof Msg) {<a name="line.154"></a>
+<span class="sourceLineNo">155</span>                results.put(key, ((Msg) value).clone());<a name="line.155"></a>
+<span class="sourceLineNo">156</span>            } else if (value instanceof Arg) {<a name="line.156"></a>
+<span class="sourceLineNo">157</span>                results.put(key, ((Arg) value).clone());<a name="line.157"></a>
+<span class="sourceLineNo">158</span>            } else if (value instanceof Var) {<a name="line.158"></a>
+<span class="sourceLineNo">159</span>                results.put(key, ((Var) value).clone());<a name="line.159"></a>
+<span class="sourceLineNo">160</span>            } else {<a name="line.160"></a>
+<span class="sourceLineNo">161</span>                results.put(key, value);<a name="line.161"></a>
+<span class="sourceLineNo">162</span>            }<a name="line.162"></a>
+<span class="sourceLineNo">163</span>        }<a name="line.163"></a>
+<span class="sourceLineNo">164</span><a name="line.164"></a>
+<span class="sourceLineNo">165</span>        results.setFast(true);<a name="line.165"></a>
+<span class="sourceLineNo">166</span>        return results;<a name="line.166"></a>
+<span class="sourceLineNo">167</span>    }<a name="line.167"></a>
+<span class="sourceLineNo">168</span><a name="line.168"></a>
+<span class="sourceLineNo">169</span>    /**<a name="line.169"></a>
+<span class="sourceLineNo">170</span>     * Makes a deep copy of a &lt;code&gt;Map&lt;/code&gt; if the values are<a name="line.170"></a>
+<span class="sourceLineNo">171</span>     * &lt;code&gt;Msg&lt;/code&gt;, &lt;code&gt;Arg&lt;/code&gt;, or &lt;code&gt;Var&lt;/code&gt;.  Otherwise,<a name="line.171"></a>
+<span class="sourceLineNo">172</span>     * it is a shallow copy.<a name="line.172"></a>
+<span class="sourceLineNo">173</span>     *<a name="line.173"></a>
+<span class="sourceLineNo">174</span>     * @param map The source Map to copy.<a name="line.174"></a>
+<span class="sourceLineNo">175</span>     *<a name="line.175"></a>
+<span class="sourceLineNo">176</span>     * @return A copy of the &lt;code&gt;Map&lt;/code&gt; that was passed in.<a name="line.176"></a>
+<span class="sourceLineNo">177</span>     */<a name="line.177"></a>
+<span class="sourceLineNo">178</span>    public static Map&lt;String, Object&gt; copyMap(Map&lt;String, Object&gt; map) {<a name="line.178"></a>
+<span class="sourceLineNo">179</span>        Map&lt;String, Object&gt; results = new HashMap&lt;String, Object&gt;();<a name="line.179"></a>
+<span class="sourceLineNo">180</span><a name="line.180"></a>
+<span class="sourceLineNo">181</span>        Iterator&lt;Entry&lt;String, Object&gt;&gt; i = map.entrySet().iterator();<a name="line.181"></a>
+<span class="sourceLineNo">182</span>        while (i.hasNext()) {<a name="line.182"></a>
+<span class="sourceLineNo">183</span>            Entry&lt;String, Object&gt; entry = i.next();<a name="line.183"></a>
+<span class="sourceLineNo">184</span>            String key = entry.getKey();<a name="line.184"></a>
+<span class="sourceLineNo">185</span>            Object value = entry.getValue();<a name="line.185"></a>
+<span class="sourceLineNo">186</span><a name="line.186"></a>
+<span class="sourceLineNo">187</span>            if (value instanceof Msg) {<a name="line.187"></a>
+<span class="sourceLineNo">188</span>                results.put(key, ((Msg) value).clone());<a name="line.188"></a>
+<span class="sourceLineNo">189</span>            } else if (value instanceof Arg) {<a name="line.189"></a>
+<span class="sourceLineNo">190</span>                results.put(key, ((Arg) value).clone());<a name="line.190"></a>
+<span class="sourceLineNo">191</span>            } else if (value instanceof Var) {<a name="line.191"></a>
+<span class="sourceLineNo">192</span>                results.put(key, ((Var) value).clone());<a name="line.192"></a>
+<span class="sourceLineNo">193</span>            } else {<a name="line.193"></a>
+<span class="sourceLineNo">194</span>                results.put(key, value);<a name="line.194"></a>
+<span class="sourceLineNo">195</span>            }<a name="line.195"></a>
+<span class="sourceLineNo">196</span>        }<a name="line.196"></a>
+<span class="sourceLineNo">197</span>        return results;<a name="line.197"></a>
+<span class="sourceLineNo">198</span>    }<a name="line.198"></a>
+<span class="sourceLineNo">199</span><a name="line.199"></a>
+<span class="sourceLineNo">200</span>}<a name="line.200"></a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</pre>
+</div>
+</body>
+</html>

@@ -1,0 +1,209 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en">
+<head>
+<title>Source code</title>
+<link rel="stylesheet" type="text/css" href="../../../../../../../stylesheet.css" title="Style">
+</head>
+<body>
+<div class="sourceContainer">
+<pre><span class="sourceLineNo">001</span>/*<a name="line.1"></a>
+<span class="sourceLineNo">002</span> * Licensed to the Apache Software Foundation (ASF) under one or more<a name="line.2"></a>
+<span class="sourceLineNo">003</span> * contributor license agreements.  See the NOTICE file distributed with<a name="line.3"></a>
+<span class="sourceLineNo">004</span> * this work for additional information regarding copyright ownership.<a name="line.4"></a>
+<span class="sourceLineNo">005</span> * The ASF licenses this file to You under the Apache License, Version 2.0<a name="line.5"></a>
+<span class="sourceLineNo">006</span> * (the "License"); you may not use this file except in compliance with<a name="line.6"></a>
+<span class="sourceLineNo">007</span> * the License.  You may obtain a copy of the License at<a name="line.7"></a>
+<span class="sourceLineNo">008</span> *<a name="line.8"></a>
+<span class="sourceLineNo">009</span> *      http://www.apache.org/licenses/LICENSE-2.0<a name="line.9"></a>
+<span class="sourceLineNo">010</span> *<a name="line.10"></a>
+<span class="sourceLineNo">011</span> * Unless required by applicable law or agreed to in writing, software<a name="line.11"></a>
+<span class="sourceLineNo">012</span> * distributed under the License is distributed on an "AS IS" BASIS,<a name="line.12"></a>
+<span class="sourceLineNo">013</span> * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.<a name="line.13"></a>
+<span class="sourceLineNo">014</span> * See the License for the specific language governing permissions and<a name="line.14"></a>
+<span class="sourceLineNo">015</span> * limitations under the License.<a name="line.15"></a>
+<span class="sourceLineNo">016</span> */<a name="line.16"></a>
+<span class="sourceLineNo">017</span>package org.apache.commons.validator.routines.checkdigit;<a name="line.17"></a>
+<span class="sourceLineNo">018</span><a name="line.18"></a>
+<span class="sourceLineNo">019</span>import java.io.Serializable;<a name="line.19"></a>
+<span class="sourceLineNo">020</span><a name="line.20"></a>
+<span class="sourceLineNo">021</span>/**<a name="line.21"></a>
+<span class="sourceLineNo">022</span> * &lt;b&gt;IBAN&lt;/b&gt; (International Bank Account Number) Check Digit calculation/validation.<a name="line.22"></a>
+<span class="sourceLineNo">023</span> * &lt;p&gt;<a name="line.23"></a>
+<span class="sourceLineNo">024</span> * This routine is based on the ISO 7064 Mod 97,10 check digit calculation routine.<a name="line.24"></a>
+<span class="sourceLineNo">025</span> * &lt;p&gt;<a name="line.25"></a>
+<span class="sourceLineNo">026</span> * The two check digit characters in a IBAN number are the third and fourth characters<a name="line.26"></a>
+<span class="sourceLineNo">027</span> * in the code. For &lt;i&gt;check digit&lt;/i&gt; calculation/validation the first four characters are moved<a name="line.27"></a>
+<span class="sourceLineNo">028</span> * to the end of the code.<a name="line.28"></a>
+<span class="sourceLineNo">029</span> *  So &lt;code&gt;CCDDnnnnnnn&lt;/code&gt; becomes &lt;code&gt;nnnnnnnCCDD&lt;/code&gt; (where<a name="line.29"></a>
+<span class="sourceLineNo">030</span> *  &lt;code&gt;CC&lt;/code&gt; is the country code and &lt;code&gt;DD&lt;/code&gt; is the check digit). For<a name="line.30"></a>
+<span class="sourceLineNo">031</span> *  check digit calculation the check digit value should be set to zero (i.e.<a name="line.31"></a>
+<span class="sourceLineNo">032</span> *  &lt;code&gt;CC00nnnnnnn&lt;/code&gt; in this example.<a name="line.32"></a>
+<span class="sourceLineNo">033</span> * &lt;p&gt;<a name="line.33"></a>
+<span class="sourceLineNo">034</span> * Note: the class does not check the format of the IBAN number, only the check digits.<a name="line.34"></a>
+<span class="sourceLineNo">035</span> * &lt;p&gt;<a name="line.35"></a>
+<span class="sourceLineNo">036</span> * For further information see<a name="line.36"></a>
+<span class="sourceLineNo">037</span> *  &lt;a href="http://en.wikipedia.org/wiki/International_Bank_Account_Number"&gt;Wikipedia -<a name="line.37"></a>
+<span class="sourceLineNo">038</span> *  IBAN number&lt;/a&gt;.<a name="line.38"></a>
+<span class="sourceLineNo">039</span> *<a name="line.39"></a>
+<span class="sourceLineNo">040</span> * @version $Revision$<a name="line.40"></a>
+<span class="sourceLineNo">041</span> * @since Validator 1.4<a name="line.41"></a>
+<span class="sourceLineNo">042</span> */<a name="line.42"></a>
+<span class="sourceLineNo">043</span>public final class IBANCheckDigit implements CheckDigit, Serializable {<a name="line.43"></a>
+<span class="sourceLineNo">044</span><a name="line.44"></a>
+<span class="sourceLineNo">045</span>    private static final int MIN_CODE_LEN = 5;<a name="line.45"></a>
+<span class="sourceLineNo">046</span><a name="line.46"></a>
+<span class="sourceLineNo">047</span>    private static final long serialVersionUID = -3600191725934382801L;<a name="line.47"></a>
+<span class="sourceLineNo">048</span><a name="line.48"></a>
+<span class="sourceLineNo">049</span>    private static final int MAX_ALPHANUMERIC_VALUE = 35; // Character.getNumericValue('Z')<a name="line.49"></a>
+<span class="sourceLineNo">050</span><a name="line.50"></a>
+<span class="sourceLineNo">051</span>    /** Singleton IBAN Number Check Digit instance */<a name="line.51"></a>
+<span class="sourceLineNo">052</span>    public static final CheckDigit IBAN_CHECK_DIGIT = new IBANCheckDigit();<a name="line.52"></a>
+<span class="sourceLineNo">053</span><a name="line.53"></a>
+<span class="sourceLineNo">054</span>    private static final long MAX = 999999999;<a name="line.54"></a>
+<span class="sourceLineNo">055</span><a name="line.55"></a>
+<span class="sourceLineNo">056</span>    private static final long MODULUS = 97;<a name="line.56"></a>
+<span class="sourceLineNo">057</span><a name="line.57"></a>
+<span class="sourceLineNo">058</span>    /**<a name="line.58"></a>
+<span class="sourceLineNo">059</span>     * Construct Check Digit routine for IBAN Numbers.<a name="line.59"></a>
+<span class="sourceLineNo">060</span>     */<a name="line.60"></a>
+<span class="sourceLineNo">061</span>    public IBANCheckDigit() {<a name="line.61"></a>
+<span class="sourceLineNo">062</span>    }<a name="line.62"></a>
+<span class="sourceLineNo">063</span><a name="line.63"></a>
+<span class="sourceLineNo">064</span>    /**<a name="line.64"></a>
+<span class="sourceLineNo">065</span>     * Validate the check digit of an IBAN code.<a name="line.65"></a>
+<span class="sourceLineNo">066</span>     *<a name="line.66"></a>
+<span class="sourceLineNo">067</span>     * @param code The code to validate<a name="line.67"></a>
+<span class="sourceLineNo">068</span>     * @return &lt;code&gt;true&lt;/code&gt; if the check digit is valid, otherwise<a name="line.68"></a>
+<span class="sourceLineNo">069</span>     * &lt;code&gt;false&lt;/code&gt;<a name="line.69"></a>
+<span class="sourceLineNo">070</span>     */<a name="line.70"></a>
+<span class="sourceLineNo">071</span>    @Override<a name="line.71"></a>
+<span class="sourceLineNo">072</span>    public boolean isValid(String code) {<a name="line.72"></a>
+<span class="sourceLineNo">073</span>        if (code == null || code.length() &lt; MIN_CODE_LEN) {<a name="line.73"></a>
+<span class="sourceLineNo">074</span>            return false;<a name="line.74"></a>
+<span class="sourceLineNo">075</span>        }<a name="line.75"></a>
+<span class="sourceLineNo">076</span>        String check = code.substring(2,4); // CHECKSTYLE IGNORE MagicNumber<a name="line.76"></a>
+<span class="sourceLineNo">077</span>        if ("00".equals(check) || "01".equals(check) || "99".equals(check)) {<a name="line.77"></a>
+<span class="sourceLineNo">078</span>            return false;<a name="line.78"></a>
+<span class="sourceLineNo">079</span>        }<a name="line.79"></a>
+<span class="sourceLineNo">080</span>        try {<a name="line.80"></a>
+<span class="sourceLineNo">081</span>            int modulusResult = calculateModulus(code);<a name="line.81"></a>
+<span class="sourceLineNo">082</span>            return (modulusResult == 1);<a name="line.82"></a>
+<span class="sourceLineNo">083</span>        } catch (CheckDigitException  ex) {<a name="line.83"></a>
+<span class="sourceLineNo">084</span>            return false;<a name="line.84"></a>
+<span class="sourceLineNo">085</span>        }<a name="line.85"></a>
+<span class="sourceLineNo">086</span>    }<a name="line.86"></a>
+<span class="sourceLineNo">087</span><a name="line.87"></a>
+<span class="sourceLineNo">088</span>    /**<a name="line.88"></a>
+<span class="sourceLineNo">089</span>     * Calculate the &lt;i&gt;Check Digit&lt;/i&gt; for an IBAN code.<a name="line.89"></a>
+<span class="sourceLineNo">090</span>     * &lt;p&gt;<a name="line.90"></a>
+<span class="sourceLineNo">091</span>     * &lt;b&gt;Note:&lt;/b&gt; The check digit is the third and fourth<a name="line.91"></a>
+<span class="sourceLineNo">092</span>     * characters and is set to the value "&lt;code&gt;00&lt;/code&gt;".<a name="line.92"></a>
+<span class="sourceLineNo">093</span>     *<a name="line.93"></a>
+<span class="sourceLineNo">094</span>     * @param code The code to calculate the Check Digit for<a name="line.94"></a>
+<span class="sourceLineNo">095</span>     * @return The calculated Check Digit as 2 numeric decimal characters, e.g. "42"<a name="line.95"></a>
+<span class="sourceLineNo">096</span>     * @throws CheckDigitException if an error occurs calculating<a name="line.96"></a>
+<span class="sourceLineNo">097</span>     * the check digit for the specified code<a name="line.97"></a>
+<span class="sourceLineNo">098</span>     */<a name="line.98"></a>
+<span class="sourceLineNo">099</span>    @Override<a name="line.99"></a>
+<span class="sourceLineNo">100</span>    public String calculate(String code) throws CheckDigitException {<a name="line.100"></a>
+<span class="sourceLineNo">101</span>        if (code == null || code.length() &lt; MIN_CODE_LEN) {<a name="line.101"></a>
+<span class="sourceLineNo">102</span>            throw new CheckDigitException("Invalid Code length=" +<a name="line.102"></a>
+<span class="sourceLineNo">103</span>                    (code == null ? 0 : code.length()));<a name="line.103"></a>
+<span class="sourceLineNo">104</span>        }<a name="line.104"></a>
+<span class="sourceLineNo">105</span>        code = code.substring(0, 2) + "00" + code.substring(4); // CHECKSTYLE IGNORE MagicNumber<a name="line.105"></a>
+<span class="sourceLineNo">106</span>        int modulusResult = calculateModulus(code);<a name="line.106"></a>
+<span class="sourceLineNo">107</span>        int charValue = (98 - modulusResult); // CHECKSTYLE IGNORE MagicNumber<a name="line.107"></a>
+<span class="sourceLineNo">108</span>        String checkDigit = Integer.toString(charValue);<a name="line.108"></a>
+<span class="sourceLineNo">109</span>        return (charValue &gt; 9 ? checkDigit : "0" + checkDigit); // CHECKSTYLE IGNORE MagicNumber<a name="line.109"></a>
+<span class="sourceLineNo">110</span>    }<a name="line.110"></a>
+<span class="sourceLineNo">111</span><a name="line.111"></a>
+<span class="sourceLineNo">112</span>    /**<a name="line.112"></a>
+<span class="sourceLineNo">113</span>     * Calculate the modulus for a code.<a name="line.113"></a>
+<span class="sourceLineNo">114</span>     *<a name="line.114"></a>
+<span class="sourceLineNo">115</span>     * @param code The code to calculate the modulus for.<a name="line.115"></a>
+<span class="sourceLineNo">116</span>     * @return The modulus value<a name="line.116"></a>
+<span class="sourceLineNo">117</span>     * @throws CheckDigitException if an error occurs calculating the modulus<a name="line.117"></a>
+<span class="sourceLineNo">118</span>     * for the specified code<a name="line.118"></a>
+<span class="sourceLineNo">119</span>     */<a name="line.119"></a>
+<span class="sourceLineNo">120</span>    private int calculateModulus(String code) throws CheckDigitException {<a name="line.120"></a>
+<span class="sourceLineNo">121</span>        String reformattedCode = code.substring(4) + code.substring(0, 4); // CHECKSTYLE IGNORE MagicNumber<a name="line.121"></a>
+<span class="sourceLineNo">122</span>        long total = 0;<a name="line.122"></a>
+<span class="sourceLineNo">123</span>        for (int i = 0; i &lt; reformattedCode.length(); i++) {<a name="line.123"></a>
+<span class="sourceLineNo">124</span>            int charValue = Character.getNumericValue(reformattedCode.charAt(i));<a name="line.124"></a>
+<span class="sourceLineNo">125</span>            if (charValue &lt; 0 || charValue &gt; MAX_ALPHANUMERIC_VALUE) {<a name="line.125"></a>
+<span class="sourceLineNo">126</span>                throw new CheckDigitException("Invalid Character[" +<a name="line.126"></a>
+<span class="sourceLineNo">127</span>                        i + "] = '" + charValue + "'");<a name="line.127"></a>
+<span class="sourceLineNo">128</span>            }<a name="line.128"></a>
+<span class="sourceLineNo">129</span>            total = (charValue &gt; 9 ? total * 100 : total * 10) + charValue; // CHECKSTYLE IGNORE MagicNumber<a name="line.129"></a>
+<span class="sourceLineNo">130</span>            if (total &gt; MAX) {<a name="line.130"></a>
+<span class="sourceLineNo">131</span>                total = total % MODULUS;<a name="line.131"></a>
+<span class="sourceLineNo">132</span>            }<a name="line.132"></a>
+<span class="sourceLineNo">133</span>        }<a name="line.133"></a>
+<span class="sourceLineNo">134</span>        return (int)(total % MODULUS);<a name="line.134"></a>
+<span class="sourceLineNo">135</span>    }<a name="line.135"></a>
+<span class="sourceLineNo">136</span><a name="line.136"></a>
+<span class="sourceLineNo">137</span>}<a name="line.137"></a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</pre>
+</div>
+</body>
+</html>

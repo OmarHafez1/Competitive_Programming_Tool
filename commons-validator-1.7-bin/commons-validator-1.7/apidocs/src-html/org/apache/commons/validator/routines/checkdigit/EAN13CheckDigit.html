@@ -1,0 +1,150 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en">
+<head>
+<title>Source code</title>
+<link rel="stylesheet" type="text/css" href="../../../../../../../stylesheet.css" title="Style">
+</head>
+<body>
+<div class="sourceContainer">
+<pre><span class="sourceLineNo">001</span>/*<a name="line.1"></a>
+<span class="sourceLineNo">002</span> * Licensed to the Apache Software Foundation (ASF) under one or more<a name="line.2"></a>
+<span class="sourceLineNo">003</span> * contributor license agreements.  See the NOTICE file distributed with<a name="line.3"></a>
+<span class="sourceLineNo">004</span> * this work for additional information regarding copyright ownership.<a name="line.4"></a>
+<span class="sourceLineNo">005</span> * The ASF licenses this file to You under the Apache License, Version 2.0<a name="line.5"></a>
+<span class="sourceLineNo">006</span> * (the "License"); you may not use this file except in compliance with<a name="line.6"></a>
+<span class="sourceLineNo">007</span> * the License.  You may obtain a copy of the License at<a name="line.7"></a>
+<span class="sourceLineNo">008</span> *<a name="line.8"></a>
+<span class="sourceLineNo">009</span> *      http://www.apache.org/licenses/LICENSE-2.0<a name="line.9"></a>
+<span class="sourceLineNo">010</span> *<a name="line.10"></a>
+<span class="sourceLineNo">011</span> * Unless required by applicable law or agreed to in writing, software<a name="line.11"></a>
+<span class="sourceLineNo">012</span> * distributed under the License is distributed on an "AS IS" BASIS,<a name="line.12"></a>
+<span class="sourceLineNo">013</span> * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.<a name="line.13"></a>
+<span class="sourceLineNo">014</span> * See the License for the specific language governing permissions and<a name="line.14"></a>
+<span class="sourceLineNo">015</span> * limitations under the License.<a name="line.15"></a>
+<span class="sourceLineNo">016</span> */<a name="line.16"></a>
+<span class="sourceLineNo">017</span>package org.apache.commons.validator.routines.checkdigit;<a name="line.17"></a>
+<span class="sourceLineNo">018</span><a name="line.18"></a>
+<span class="sourceLineNo">019</span>/**<a name="line.19"></a>
+<span class="sourceLineNo">020</span> * Modulus 10 &lt;b&gt;EAN-13&lt;/b&gt; / &lt;b&gt;UPC&lt;/b&gt; / &lt;b&gt;ISBN-13&lt;/b&gt; Check Digit<a name="line.20"></a>
+<span class="sourceLineNo">021</span> * calculation/validation.<a name="line.21"></a>
+<span class="sourceLineNo">022</span> * &lt;p&gt;<a name="line.22"></a>
+<span class="sourceLineNo">023</span> * Check digit calculation is based on &lt;i&gt;modulus 10&lt;/i&gt; with digits in<a name="line.23"></a>
+<span class="sourceLineNo">024</span> * an &lt;i&gt;odd&lt;/i&gt; position (from right to left) being weighted 1 and &lt;i&gt;even&lt;/i&gt;<a name="line.24"></a>
+<span class="sourceLineNo">025</span> * position digits being weighted 3.<a name="line.25"></a>
+<span class="sourceLineNo">026</span> * &lt;p&gt;<a name="line.26"></a>
+<span class="sourceLineNo">027</span> * For further information see:<a name="line.27"></a>
+<span class="sourceLineNo">028</span> * &lt;ul&gt;<a name="line.28"></a>
+<span class="sourceLineNo">029</span> *   &lt;li&gt;EAN-13 - see<a name="line.29"></a>
+<span class="sourceLineNo">030</span> *       &lt;a href="http://en.wikipedia.org/wiki/European_Article_Number"&gt;Wikipedia -<a name="line.30"></a>
+<span class="sourceLineNo">031</span> *       European Article Number&lt;/a&gt;.&lt;/li&gt;<a name="line.31"></a>
+<span class="sourceLineNo">032</span> *   &lt;li&gt;UPC - see<a name="line.32"></a>
+<span class="sourceLineNo">033</span> *       &lt;a href="http://en.wikipedia.org/wiki/Universal_Product_Code"&gt;Wikipedia -<a name="line.33"></a>
+<span class="sourceLineNo">034</span> *       Universal Product Code&lt;/a&gt;.&lt;/li&gt;<a name="line.34"></a>
+<span class="sourceLineNo">035</span> *   &lt;li&gt;ISBN-13 - see<a name="line.35"></a>
+<span class="sourceLineNo">036</span> *       &lt;a href="http://en.wikipedia.org/wiki/ISBN"&gt;Wikipedia - International<a name="line.36"></a>
+<span class="sourceLineNo">037</span> *       Standard Book Number (ISBN)&lt;/a&gt;.&lt;/li&gt;<a name="line.37"></a>
+<span class="sourceLineNo">038</span> * &lt;/ul&gt;<a name="line.38"></a>
+<span class="sourceLineNo">039</span> *<a name="line.39"></a>
+<span class="sourceLineNo">040</span> * @version $Revision$<a name="line.40"></a>
+<span class="sourceLineNo">041</span> * @since Validator 1.4<a name="line.41"></a>
+<span class="sourceLineNo">042</span> */<a name="line.42"></a>
+<span class="sourceLineNo">043</span>public final class EAN13CheckDigit extends ModulusCheckDigit {<a name="line.43"></a>
+<span class="sourceLineNo">044</span><a name="line.44"></a>
+<span class="sourceLineNo">045</span>    private static final long serialVersionUID = 1726347093230424107L;<a name="line.45"></a>
+<span class="sourceLineNo">046</span><a name="line.46"></a>
+<span class="sourceLineNo">047</span>    /** Singleton EAN-13 Check Digit instance */<a name="line.47"></a>
+<span class="sourceLineNo">048</span>    public static final CheckDigit EAN13_CHECK_DIGIT = new EAN13CheckDigit();<a name="line.48"></a>
+<span class="sourceLineNo">049</span><a name="line.49"></a>
+<span class="sourceLineNo">050</span>    /** weighting given to digits depending on their right position */<a name="line.50"></a>
+<span class="sourceLineNo">051</span>    private static final int[] POSITION_WEIGHT = new int[] {3, 1};<a name="line.51"></a>
+<span class="sourceLineNo">052</span><a name="line.52"></a>
+<span class="sourceLineNo">053</span>    /**<a name="line.53"></a>
+<span class="sourceLineNo">054</span>     * Construct a modulus 10 Check Digit routine for EAN/UPC.<a name="line.54"></a>
+<span class="sourceLineNo">055</span>     */<a name="line.55"></a>
+<span class="sourceLineNo">056</span>    public EAN13CheckDigit() {<a name="line.56"></a>
+<span class="sourceLineNo">057</span>        super(10);  // CHECKSTYLE IGNORE MagicNumber<a name="line.57"></a>
+<span class="sourceLineNo">058</span>    }<a name="line.58"></a>
+<span class="sourceLineNo">059</span><a name="line.59"></a>
+<span class="sourceLineNo">060</span>    /**<a name="line.60"></a>
+<span class="sourceLineNo">061</span>     * &lt;p&gt;Calculates the &lt;i&gt;weighted&lt;/i&gt; value of a character in the<a name="line.61"></a>
+<span class="sourceLineNo">062</span>     * code at a specified position.&lt;/p&gt;<a name="line.62"></a>
+<span class="sourceLineNo">063</span>     *<a name="line.63"></a>
+<span class="sourceLineNo">064</span>     * &lt;p&gt;For EAN-13 (from right to left) &lt;b&gt;odd&lt;/b&gt; digits are weighted<a name="line.64"></a>
+<span class="sourceLineNo">065</span>     * with a factor of &lt;b&gt;one&lt;/b&gt; and &lt;b&gt;even&lt;/b&gt; digits with a factor<a name="line.65"></a>
+<span class="sourceLineNo">066</span>     * of &lt;b&gt;three&lt;/b&gt;.&lt;/p&gt;<a name="line.66"></a>
+<span class="sourceLineNo">067</span>     *<a name="line.67"></a>
+<span class="sourceLineNo">068</span>     * @param charValue The numeric value of the character.<a name="line.68"></a>
+<span class="sourceLineNo">069</span>     * @param leftPos The position of the character in the code, counting from left to right<a name="line.69"></a>
+<span class="sourceLineNo">070</span>     * @param rightPos The positionof the character in the code, counting from right to left<a name="line.70"></a>
+<span class="sourceLineNo">071</span>     * @return The weighted value of the character.<a name="line.71"></a>
+<span class="sourceLineNo">072</span>     */<a name="line.72"></a>
+<span class="sourceLineNo">073</span>    @Override<a name="line.73"></a>
+<span class="sourceLineNo">074</span>    protected int weightedValue(int charValue, int leftPos, int rightPos) {<a name="line.74"></a>
+<span class="sourceLineNo">075</span>        int weight = POSITION_WEIGHT[rightPos % 2];<a name="line.75"></a>
+<span class="sourceLineNo">076</span>        return charValue * weight;<a name="line.76"></a>
+<span class="sourceLineNo">077</span>    }<a name="line.77"></a>
+<span class="sourceLineNo">078</span>}<a name="line.78"></a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</pre>
+</div>
+</body>
+</html>

@@ -1,0 +1,278 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en">
+<head>
+<title>Source code</title>
+<link rel="stylesheet" type="text/css" href="../../../../../../stylesheet.css" title="Style">
+</head>
+<body>
+<div class="sourceContainer">
+<pre><span class="sourceLineNo">001</span>/*<a name="line.1"></a>
+<span class="sourceLineNo">002</span> * Licensed to the Apache Software Foundation (ASF) under one or more<a name="line.2"></a>
+<span class="sourceLineNo">003</span> * contributor license agreements.  See the NOTICE file distributed with<a name="line.3"></a>
+<span class="sourceLineNo">004</span> * this work for additional information regarding copyright ownership.<a name="line.4"></a>
+<span class="sourceLineNo">005</span> * The ASF licenses this file to You under the Apache License, Version 2.0<a name="line.5"></a>
+<span class="sourceLineNo">006</span> * (the "License"); you may not use this file except in compliance with<a name="line.6"></a>
+<span class="sourceLineNo">007</span> * the License.  You may obtain a copy of the License at<a name="line.7"></a>
+<span class="sourceLineNo">008</span> *<a name="line.8"></a>
+<span class="sourceLineNo">009</span> *      http://www.apache.org/licenses/LICENSE-2.0<a name="line.9"></a>
+<span class="sourceLineNo">010</span> *<a name="line.10"></a>
+<span class="sourceLineNo">011</span> * Unless required by applicable law or agreed to in writing, software<a name="line.11"></a>
+<span class="sourceLineNo">012</span> * distributed under the License is distributed on an "AS IS" BASIS,<a name="line.12"></a>
+<span class="sourceLineNo">013</span> * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.<a name="line.13"></a>
+<span class="sourceLineNo">014</span> * See the License for the specific language governing permissions and<a name="line.14"></a>
+<span class="sourceLineNo">015</span> * limitations under the License.<a name="line.15"></a>
+<span class="sourceLineNo">016</span> */<a name="line.16"></a>
+<span class="sourceLineNo">017</span>package org.apache.commons.validator.util;<a name="line.17"></a>
+<span class="sourceLineNo">018</span><a name="line.18"></a>
+<span class="sourceLineNo">019</span>import java.io.Serializable;<a name="line.19"></a>
+<span class="sourceLineNo">020</span><a name="line.20"></a>
+<span class="sourceLineNo">021</span>/**<a name="line.21"></a>
+<span class="sourceLineNo">022</span> * Represents a collection of 64 boolean (on/off) flags.  Individual flags<a name="line.22"></a>
+<span class="sourceLineNo">023</span> * are represented by powers of 2.  For example,&lt;br&gt;<a name="line.23"></a>
+<span class="sourceLineNo">024</span> * Flag 1 = 1&lt;br&gt;<a name="line.24"></a>
+<span class="sourceLineNo">025</span> * Flag 2 = 2&lt;br&gt;<a name="line.25"></a>
+<span class="sourceLineNo">026</span> * Flag 3 = 4&lt;br&gt;<a name="line.26"></a>
+<span class="sourceLineNo">027</span> * Flag 4 = 8&lt;br&gt;&lt;br&gt;<a name="line.27"></a>
+<span class="sourceLineNo">028</span> * or using shift operator to make numbering easier:&lt;br&gt;<a name="line.28"></a>
+<span class="sourceLineNo">029</span> * Flag 1 = 1 &amp;lt;&amp;lt; 0&lt;br&gt;<a name="line.29"></a>
+<span class="sourceLineNo">030</span> * Flag 2 = 1 &amp;lt;&amp;lt; 1&lt;br&gt;<a name="line.30"></a>
+<span class="sourceLineNo">031</span> * Flag 3 = 1 &amp;lt;&amp;lt; 2&lt;br&gt;<a name="line.31"></a>
+<span class="sourceLineNo">032</span> * Flag 4 = 1 &amp;lt;&amp;lt; 3&lt;br&gt;<a name="line.32"></a>
+<span class="sourceLineNo">033</span> *<a name="line.33"></a>
+<span class="sourceLineNo">034</span> * &lt;p&gt;<a name="line.34"></a>
+<span class="sourceLineNo">035</span> * There cannot be a flag with a value of 3 because that represents Flag 1<a name="line.35"></a>
+<span class="sourceLineNo">036</span> * and Flag 2 both being on/true.<a name="line.36"></a>
+<span class="sourceLineNo">037</span> * &lt;/p&gt;<a name="line.37"></a>
+<span class="sourceLineNo">038</span> *<a name="line.38"></a>
+<span class="sourceLineNo">039</span> * @version $Revision$<a name="line.39"></a>
+<span class="sourceLineNo">040</span> */<a name="line.40"></a>
+<span class="sourceLineNo">041</span>public class Flags implements Serializable, Cloneable {<a name="line.41"></a>
+<span class="sourceLineNo">042</span><a name="line.42"></a>
+<span class="sourceLineNo">043</span>    private static final long serialVersionUID = 8481587558770237995L;<a name="line.43"></a>
+<span class="sourceLineNo">044</span><a name="line.44"></a>
+<span class="sourceLineNo">045</span>    /**<a name="line.45"></a>
+<span class="sourceLineNo">046</span>     * Represents the current flag state.<a name="line.46"></a>
+<span class="sourceLineNo">047</span>     */<a name="line.47"></a>
+<span class="sourceLineNo">048</span>    private long flags = 0;<a name="line.48"></a>
+<span class="sourceLineNo">049</span><a name="line.49"></a>
+<span class="sourceLineNo">050</span>    /**<a name="line.50"></a>
+<span class="sourceLineNo">051</span>     * Create a new Flags object.<a name="line.51"></a>
+<span class="sourceLineNo">052</span>     */<a name="line.52"></a>
+<span class="sourceLineNo">053</span>    public Flags() {<a name="line.53"></a>
+<span class="sourceLineNo">054</span>        super();<a name="line.54"></a>
+<span class="sourceLineNo">055</span>    }<a name="line.55"></a>
+<span class="sourceLineNo">056</span><a name="line.56"></a>
+<span class="sourceLineNo">057</span>    /**<a name="line.57"></a>
+<span class="sourceLineNo">058</span>     * Initialize a new Flags object with the given flags.<a name="line.58"></a>
+<span class="sourceLineNo">059</span>     *<a name="line.59"></a>
+<span class="sourceLineNo">060</span>     * @param flags collection of boolean flags to represent.<a name="line.60"></a>
+<span class="sourceLineNo">061</span>     */<a name="line.61"></a>
+<span class="sourceLineNo">062</span>    public Flags(long flags) {<a name="line.62"></a>
+<span class="sourceLineNo">063</span>        super();<a name="line.63"></a>
+<span class="sourceLineNo">064</span>        this.flags = flags;<a name="line.64"></a>
+<span class="sourceLineNo">065</span>    }<a name="line.65"></a>
+<span class="sourceLineNo">066</span><a name="line.66"></a>
+<span class="sourceLineNo">067</span>    /**<a name="line.67"></a>
+<span class="sourceLineNo">068</span>     * Returns the current flags.<a name="line.68"></a>
+<span class="sourceLineNo">069</span>     *<a name="line.69"></a>
+<span class="sourceLineNo">070</span>     * @return collection of boolean flags represented.<a name="line.70"></a>
+<span class="sourceLineNo">071</span>     */<a name="line.71"></a>
+<span class="sourceLineNo">072</span>    public long getFlags() {<a name="line.72"></a>
+<span class="sourceLineNo">073</span>        return this.flags;<a name="line.73"></a>
+<span class="sourceLineNo">074</span>    }<a name="line.74"></a>
+<span class="sourceLineNo">075</span><a name="line.75"></a>
+<span class="sourceLineNo">076</span>    /**<a name="line.76"></a>
+<span class="sourceLineNo">077</span>     * Tests whether the given flag is on.  If the flag is not a power of 2<a name="line.77"></a>
+<span class="sourceLineNo">078</span>     * (ie. 3) this tests whether the combination of flags is on.<a name="line.78"></a>
+<span class="sourceLineNo">079</span>     *<a name="line.79"></a>
+<span class="sourceLineNo">080</span>     * @param flag Flag value to check.<a name="line.80"></a>
+<span class="sourceLineNo">081</span>     *<a name="line.81"></a>
+<span class="sourceLineNo">082</span>     * @return whether the specified flag value is on.<a name="line.82"></a>
+<span class="sourceLineNo">083</span>     */<a name="line.83"></a>
+<span class="sourceLineNo">084</span>    public boolean isOn(long flag) {<a name="line.84"></a>
+<span class="sourceLineNo">085</span>        return (this.flags &amp; flag) == flag;<a name="line.85"></a>
+<span class="sourceLineNo">086</span>    }<a name="line.86"></a>
+<span class="sourceLineNo">087</span><a name="line.87"></a>
+<span class="sourceLineNo">088</span>    /**<a name="line.88"></a>
+<span class="sourceLineNo">089</span>     * Tests whether the given flag is off.  If the flag is not a power of 2<a name="line.89"></a>
+<span class="sourceLineNo">090</span>     * (ie. 3) this tests whether the combination of flags is off.<a name="line.90"></a>
+<span class="sourceLineNo">091</span>     *<a name="line.91"></a>
+<span class="sourceLineNo">092</span>     * @param flag Flag value to check.<a name="line.92"></a>
+<span class="sourceLineNo">093</span>     *<a name="line.93"></a>
+<span class="sourceLineNo">094</span>     * @return whether the specified flag value is off.<a name="line.94"></a>
+<span class="sourceLineNo">095</span>     */<a name="line.95"></a>
+<span class="sourceLineNo">096</span>    public boolean isOff(long flag) {<a name="line.96"></a>
+<span class="sourceLineNo">097</span>        return (this.flags &amp; flag) == 0;<a name="line.97"></a>
+<span class="sourceLineNo">098</span>    }<a name="line.98"></a>
+<span class="sourceLineNo">099</span><a name="line.99"></a>
+<span class="sourceLineNo">100</span>    /**<a name="line.100"></a>
+<span class="sourceLineNo">101</span>     * Turns on the given flag.  If the flag is not a power of 2 (ie. 3) this<a name="line.101"></a>
+<span class="sourceLineNo">102</span>     * turns on multiple flags.<a name="line.102"></a>
+<span class="sourceLineNo">103</span>     *<a name="line.103"></a>
+<span class="sourceLineNo">104</span>     * @param flag Flag value to turn on.<a name="line.104"></a>
+<span class="sourceLineNo">105</span>     */<a name="line.105"></a>
+<span class="sourceLineNo">106</span>    public void turnOn(long flag) {<a name="line.106"></a>
+<span class="sourceLineNo">107</span>        this.flags |= flag;<a name="line.107"></a>
+<span class="sourceLineNo">108</span>    }<a name="line.108"></a>
+<span class="sourceLineNo">109</span><a name="line.109"></a>
+<span class="sourceLineNo">110</span>    /**<a name="line.110"></a>
+<span class="sourceLineNo">111</span>     * Turns off the given flag.  If the flag is not a power of 2 (ie. 3) this<a name="line.111"></a>
+<span class="sourceLineNo">112</span>     * turns off multiple flags.<a name="line.112"></a>
+<span class="sourceLineNo">113</span>     *<a name="line.113"></a>
+<span class="sourceLineNo">114</span>     * @param flag Flag value to turn off.<a name="line.114"></a>
+<span class="sourceLineNo">115</span>     */<a name="line.115"></a>
+<span class="sourceLineNo">116</span>    public void turnOff(long flag) {<a name="line.116"></a>
+<span class="sourceLineNo">117</span>        this.flags &amp;= ~flag;<a name="line.117"></a>
+<span class="sourceLineNo">118</span>    }<a name="line.118"></a>
+<span class="sourceLineNo">119</span><a name="line.119"></a>
+<span class="sourceLineNo">120</span>    /**<a name="line.120"></a>
+<span class="sourceLineNo">121</span>     * Turn off all flags.<a name="line.121"></a>
+<span class="sourceLineNo">122</span>     */<a name="line.122"></a>
+<span class="sourceLineNo">123</span>    public void turnOffAll() {<a name="line.123"></a>
+<span class="sourceLineNo">124</span>        this.flags = 0;<a name="line.124"></a>
+<span class="sourceLineNo">125</span>    }<a name="line.125"></a>
+<span class="sourceLineNo">126</span><a name="line.126"></a>
+<span class="sourceLineNo">127</span>    /**<a name="line.127"></a>
+<span class="sourceLineNo">128</span>     * Turn off all flags.  This is a synonym for &lt;code&gt;turnOffAll()&lt;/code&gt;.<a name="line.128"></a>
+<span class="sourceLineNo">129</span>     * @since Validator 1.1.1<a name="line.129"></a>
+<span class="sourceLineNo">130</span>     */<a name="line.130"></a>
+<span class="sourceLineNo">131</span>    public void clear() {<a name="line.131"></a>
+<span class="sourceLineNo">132</span>        this.flags = 0;<a name="line.132"></a>
+<span class="sourceLineNo">133</span>    }<a name="line.133"></a>
+<span class="sourceLineNo">134</span><a name="line.134"></a>
+<span class="sourceLineNo">135</span>    /**<a name="line.135"></a>
+<span class="sourceLineNo">136</span>     * Turn on all 64 flags.<a name="line.136"></a>
+<span class="sourceLineNo">137</span>     */<a name="line.137"></a>
+<span class="sourceLineNo">138</span>    public void turnOnAll() {<a name="line.138"></a>
+<span class="sourceLineNo">139</span>        this.flags = 0xFFFFFFFFFFFFFFFFl;<a name="line.139"></a>
+<span class="sourceLineNo">140</span>    }<a name="line.140"></a>
+<span class="sourceLineNo">141</span><a name="line.141"></a>
+<span class="sourceLineNo">142</span>    /**<a name="line.142"></a>
+<span class="sourceLineNo">143</span>     * Clone this Flags object.<a name="line.143"></a>
+<span class="sourceLineNo">144</span>     *<a name="line.144"></a>
+<span class="sourceLineNo">145</span>     * @return a copy of this object.<a name="line.145"></a>
+<span class="sourceLineNo">146</span>     * @see java.lang.Object#clone()<a name="line.146"></a>
+<span class="sourceLineNo">147</span>     */<a name="line.147"></a>
+<span class="sourceLineNo">148</span>    @Override<a name="line.148"></a>
+<span class="sourceLineNo">149</span>    public Object clone() {<a name="line.149"></a>
+<span class="sourceLineNo">150</span>        try {<a name="line.150"></a>
+<span class="sourceLineNo">151</span>            return super.clone();<a name="line.151"></a>
+<span class="sourceLineNo">152</span>        } catch(CloneNotSupportedException e) {<a name="line.152"></a>
+<span class="sourceLineNo">153</span>            throw new RuntimeException("Couldn't clone Flags object.");<a name="line.153"></a>
+<span class="sourceLineNo">154</span>        }<a name="line.154"></a>
+<span class="sourceLineNo">155</span>    }<a name="line.155"></a>
+<span class="sourceLineNo">156</span><a name="line.156"></a>
+<span class="sourceLineNo">157</span>    /**<a name="line.157"></a>
+<span class="sourceLineNo">158</span>     * Tests if two Flags objects are in the same state.<a name="line.158"></a>
+<span class="sourceLineNo">159</span>     * @param obj object being tested<a name="line.159"></a>
+<span class="sourceLineNo">160</span>     * @see java.lang.Object#equals(java.lang.Object)<a name="line.160"></a>
+<span class="sourceLineNo">161</span>     *<a name="line.161"></a>
+<span class="sourceLineNo">162</span>     * @return whether the objects are equal.<a name="line.162"></a>
+<span class="sourceLineNo">163</span>     */<a name="line.163"></a>
+<span class="sourceLineNo">164</span>    @Override<a name="line.164"></a>
+<span class="sourceLineNo">165</span>    public boolean equals(Object obj) {<a name="line.165"></a>
+<span class="sourceLineNo">166</span>        if (!(obj instanceof Flags)) {<a name="line.166"></a>
+<span class="sourceLineNo">167</span>            return false;<a name="line.167"></a>
+<span class="sourceLineNo">168</span>        }<a name="line.168"></a>
+<span class="sourceLineNo">169</span><a name="line.169"></a>
+<span class="sourceLineNo">170</span>        if (obj == this) {<a name="line.170"></a>
+<span class="sourceLineNo">171</span>            return true;<a name="line.171"></a>
+<span class="sourceLineNo">172</span>        }<a name="line.172"></a>
+<span class="sourceLineNo">173</span><a name="line.173"></a>
+<span class="sourceLineNo">174</span>        Flags f = (Flags) obj;<a name="line.174"></a>
+<span class="sourceLineNo">175</span><a name="line.175"></a>
+<span class="sourceLineNo">176</span>        return this.flags == f.flags;<a name="line.176"></a>
+<span class="sourceLineNo">177</span>    }<a name="line.177"></a>
+<span class="sourceLineNo">178</span><a name="line.178"></a>
+<span class="sourceLineNo">179</span>    /**<a name="line.179"></a>
+<span class="sourceLineNo">180</span>     * The hash code is based on the current state of the flags.<a name="line.180"></a>
+<span class="sourceLineNo">181</span>     * @see java.lang.Object#hashCode()<a name="line.181"></a>
+<span class="sourceLineNo">182</span>     *<a name="line.182"></a>
+<span class="sourceLineNo">183</span>     * @return the hash code for this object.<a name="line.183"></a>
+<span class="sourceLineNo">184</span>     */<a name="line.184"></a>
+<span class="sourceLineNo">185</span>    @Override<a name="line.185"></a>
+<span class="sourceLineNo">186</span>    public int hashCode() {<a name="line.186"></a>
+<span class="sourceLineNo">187</span>        return (int) this.flags;<a name="line.187"></a>
+<span class="sourceLineNo">188</span>    }<a name="line.188"></a>
+<span class="sourceLineNo">189</span><a name="line.189"></a>
+<span class="sourceLineNo">190</span>    /**<a name="line.190"></a>
+<span class="sourceLineNo">191</span>     * Returns a 64 length String with the first flag on the right and the<a name="line.191"></a>
+<span class="sourceLineNo">192</span>     * 64th flag on the left.  A 1 indicates the flag is on, a 0 means it's<a name="line.192"></a>
+<span class="sourceLineNo">193</span>     * off.<a name="line.193"></a>
+<span class="sourceLineNo">194</span>     *<a name="line.194"></a>
+<span class="sourceLineNo">195</span>     * @return string representation of this object.<a name="line.195"></a>
+<span class="sourceLineNo">196</span>     */<a name="line.196"></a>
+<span class="sourceLineNo">197</span>    @Override<a name="line.197"></a>
+<span class="sourceLineNo">198</span>    public String toString() {<a name="line.198"></a>
+<span class="sourceLineNo">199</span>        StringBuilder bin = new StringBuilder(Long.toBinaryString(this.flags));<a name="line.199"></a>
+<span class="sourceLineNo">200</span>        for (int i = 64 - bin.length(); i &gt; 0; i--) { // CHECKSTYLE IGNORE MagicNumber<a name="line.200"></a>
+<span class="sourceLineNo">201</span>            bin.insert(0, "0");<a name="line.201"></a>
+<span class="sourceLineNo">202</span>        }<a name="line.202"></a>
+<span class="sourceLineNo">203</span>        return bin.toString();<a name="line.203"></a>
+<span class="sourceLineNo">204</span>    }<a name="line.204"></a>
+<span class="sourceLineNo">205</span><a name="line.205"></a>
+<span class="sourceLineNo">206</span>}<a name="line.206"></a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</pre>
+</div>
+</body>
+</html>

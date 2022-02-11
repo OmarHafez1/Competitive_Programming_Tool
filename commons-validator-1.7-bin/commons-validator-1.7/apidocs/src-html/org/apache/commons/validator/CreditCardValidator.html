@@ -1,0 +1,332 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en">
+<head>
+<title>Source code</title>
+<link rel="stylesheet" type="text/css" href="../../../../../stylesheet.css" title="Style">
+</head>
+<body>
+<div class="sourceContainer">
+<pre><span class="sourceLineNo">001</span>/*<a name="line.1"></a>
+<span class="sourceLineNo">002</span> * Licensed to the Apache Software Foundation (ASF) under one or more<a name="line.2"></a>
+<span class="sourceLineNo">003</span> * contributor license agreements.  See the NOTICE file distributed with<a name="line.3"></a>
+<span class="sourceLineNo">004</span> * this work for additional information regarding copyright ownership.<a name="line.4"></a>
+<span class="sourceLineNo">005</span> * The ASF licenses this file to You under the Apache License, Version 2.0<a name="line.5"></a>
+<span class="sourceLineNo">006</span> * (the "License"); you may not use this file except in compliance with<a name="line.6"></a>
+<span class="sourceLineNo">007</span> * the License.  You may obtain a copy of the License at<a name="line.7"></a>
+<span class="sourceLineNo">008</span> *<a name="line.8"></a>
+<span class="sourceLineNo">009</span> *      http://www.apache.org/licenses/LICENSE-2.0<a name="line.9"></a>
+<span class="sourceLineNo">010</span> *<a name="line.10"></a>
+<span class="sourceLineNo">011</span> * Unless required by applicable law or agreed to in writing, software<a name="line.11"></a>
+<span class="sourceLineNo">012</span> * distributed under the License is distributed on an "AS IS" BASIS,<a name="line.12"></a>
+<span class="sourceLineNo">013</span> * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.<a name="line.13"></a>
+<span class="sourceLineNo">014</span> * See the License for the specific language governing permissions and<a name="line.14"></a>
+<span class="sourceLineNo">015</span> * limitations under the License.<a name="line.15"></a>
+<span class="sourceLineNo">016</span> */<a name="line.16"></a>
+<span class="sourceLineNo">017</span>package org.apache.commons.validator;<a name="line.17"></a>
+<span class="sourceLineNo">018</span><a name="line.18"></a>
+<span class="sourceLineNo">019</span>import java.util.ArrayList;<a name="line.19"></a>
+<span class="sourceLineNo">020</span>import java.util.Collection;<a name="line.20"></a>
+<span class="sourceLineNo">021</span><a name="line.21"></a>
+<span class="sourceLineNo">022</span>import org.apache.commons.validator.util.Flags;<a name="line.22"></a>
+<span class="sourceLineNo">023</span><a name="line.23"></a>
+<span class="sourceLineNo">024</span>/**<a name="line.24"></a>
+<span class="sourceLineNo">025</span> * Perform credit card validations.<a name="line.25"></a>
+<span class="sourceLineNo">026</span> *<a name="line.26"></a>
+<span class="sourceLineNo">027</span> * &lt;p&gt;<a name="line.27"></a>
+<span class="sourceLineNo">028</span> * By default, all supported card types are allowed.  You can specify which<a name="line.28"></a>
+<span class="sourceLineNo">029</span> * cards should pass validation by configuring the validation options. For<a name="line.29"></a>
+<span class="sourceLineNo">030</span> * example,<a name="line.30"></a>
+<span class="sourceLineNo">031</span> * &lt;/p&gt;<a name="line.31"></a>
+<span class="sourceLineNo">032</span> *<a name="line.32"></a>
+<span class="sourceLineNo">033</span> * &lt;pre&gt;<a name="line.33"></a>
+<span class="sourceLineNo">034</span> * &lt;code&gt;CreditCardValidator ccv = new CreditCardValidator(CreditCardValidator.AMEX + CreditCardValidator.VISA);&lt;/code&gt;<a name="line.34"></a>
+<span class="sourceLineNo">035</span> * &lt;/pre&gt;<a name="line.35"></a>
+<span class="sourceLineNo">036</span> *<a name="line.36"></a>
+<span class="sourceLineNo">037</span> * &lt;p&gt;<a name="line.37"></a>
+<span class="sourceLineNo">038</span> * configures the validator to only pass American Express and Visa cards.<a name="line.38"></a>
+<span class="sourceLineNo">039</span> * If a card type is not directly supported by this class, you can implement<a name="line.39"></a>
+<span class="sourceLineNo">040</span> * the CreditCardType interface and pass an instance into the<a name="line.40"></a>
+<span class="sourceLineNo">041</span> * &lt;code&gt;addAllowedCardType&lt;/code&gt; method.<a name="line.41"></a>
+<span class="sourceLineNo">042</span> * &lt;/p&gt;<a name="line.42"></a>
+<span class="sourceLineNo">043</span> *<a name="line.43"></a>
+<span class="sourceLineNo">044</span> * &lt;p&gt;<a name="line.44"></a>
+<span class="sourceLineNo">045</span> * For a similar implementation in Perl, reference Sean M. Burke's<a name="line.45"></a>
+<span class="sourceLineNo">046</span> * &lt;a href="http://www.speech.cs.cmu.edu/~sburke/pub/luhn_lib.html"&gt;script&lt;/a&gt;.<a name="line.46"></a>
+<span class="sourceLineNo">047</span> * More information is also available<a name="line.47"></a>
+<span class="sourceLineNo">048</span> * &lt;a href="http://www.merriampark.com/anatomycc.htm"&gt;here&lt;/a&gt;.<a name="line.48"></a>
+<span class="sourceLineNo">049</span> * &lt;/p&gt;<a name="line.49"></a>
+<span class="sourceLineNo">050</span> *<a name="line.50"></a>
+<span class="sourceLineNo">051</span> * @version $Revision$<a name="line.51"></a>
+<span class="sourceLineNo">052</span> * @since Validator 1.1<a name="line.52"></a>
+<span class="sourceLineNo">053</span> * @deprecated Use the new CreditCardValidator in the routines package. This class<a name="line.53"></a>
+<span class="sourceLineNo">054</span> * will be removed in a future release.<a name="line.54"></a>
+<span class="sourceLineNo">055</span> */<a name="line.55"></a>
+<span class="sourceLineNo">056</span>// CHECKSTYLE:OFF (deprecated code)<a name="line.56"></a>
+<span class="sourceLineNo">057</span>@Deprecated<a name="line.57"></a>
+<span class="sourceLineNo">058</span>public class CreditCardValidator {<a name="line.58"></a>
+<span class="sourceLineNo">059</span><a name="line.59"></a>
+<span class="sourceLineNo">060</span>    /**<a name="line.60"></a>
+<span class="sourceLineNo">061</span>     * Option specifying that no cards are allowed.  This is useful if<a name="line.61"></a>
+<span class="sourceLineNo">062</span>     * you want only custom card types to validate so you turn off the<a name="line.62"></a>
+<span class="sourceLineNo">063</span>     * default cards with this option.<a name="line.63"></a>
+<span class="sourceLineNo">064</span>     * &lt;pre&gt;<a name="line.64"></a>
+<span class="sourceLineNo">065</span>     * &lt;code&gt;<a name="line.65"></a>
+<span class="sourceLineNo">066</span>     * CreditCardValidator v = new CreditCardValidator(CreditCardValidator.NONE);<a name="line.66"></a>
+<span class="sourceLineNo">067</span>     * v.addAllowedCardType(customType);<a name="line.67"></a>
+<span class="sourceLineNo">068</span>     * v.isValid(aCardNumber);<a name="line.68"></a>
+<span class="sourceLineNo">069</span>     * &lt;/code&gt;<a name="line.69"></a>
+<span class="sourceLineNo">070</span>     * &lt;/pre&gt;<a name="line.70"></a>
+<span class="sourceLineNo">071</span>     * @since Validator 1.1.2<a name="line.71"></a>
+<span class="sourceLineNo">072</span>     */<a name="line.72"></a>
+<span class="sourceLineNo">073</span>    public static final int NONE = 0;<a name="line.73"></a>
+<span class="sourceLineNo">074</span><a name="line.74"></a>
+<span class="sourceLineNo">075</span>    /**<a name="line.75"></a>
+<span class="sourceLineNo">076</span>     * Option specifying that American Express cards are allowed.<a name="line.76"></a>
+<span class="sourceLineNo">077</span>     */<a name="line.77"></a>
+<span class="sourceLineNo">078</span>    public static final int AMEX = 1 &lt;&lt; 0;<a name="line.78"></a>
+<span class="sourceLineNo">079</span><a name="line.79"></a>
+<span class="sourceLineNo">080</span>    /**<a name="line.80"></a>
+<span class="sourceLineNo">081</span>     * Option specifying that Visa cards are allowed.<a name="line.81"></a>
+<span class="sourceLineNo">082</span>     */<a name="line.82"></a>
+<span class="sourceLineNo">083</span>    public static final int VISA = 1 &lt;&lt; 1;<a name="line.83"></a>
+<span class="sourceLineNo">084</span><a name="line.84"></a>
+<span class="sourceLineNo">085</span>    /**<a name="line.85"></a>
+<span class="sourceLineNo">086</span>     * Option specifying that Mastercard cards are allowed.<a name="line.86"></a>
+<span class="sourceLineNo">087</span>     */<a name="line.87"></a>
+<span class="sourceLineNo">088</span>    public static final int MASTERCARD = 1 &lt;&lt; 2;<a name="line.88"></a>
+<span class="sourceLineNo">089</span><a name="line.89"></a>
+<span class="sourceLineNo">090</span>    /**<a name="line.90"></a>
+<span class="sourceLineNo">091</span>     * Option specifying that Discover cards are allowed.<a name="line.91"></a>
+<span class="sourceLineNo">092</span>     */<a name="line.92"></a>
+<span class="sourceLineNo">093</span>    public static final int DISCOVER = 1 &lt;&lt; 3;<a name="line.93"></a>
+<span class="sourceLineNo">094</span><a name="line.94"></a>
+<span class="sourceLineNo">095</span>    /**<a name="line.95"></a>
+<span class="sourceLineNo">096</span>     * The CreditCardTypes that are allowed to pass validation.<a name="line.96"></a>
+<span class="sourceLineNo">097</span>     */<a name="line.97"></a>
+<span class="sourceLineNo">098</span>    private final Collection&lt;CreditCardType&gt; cardTypes = new ArrayList&lt;CreditCardType&gt;();<a name="line.98"></a>
+<span class="sourceLineNo">099</span><a name="line.99"></a>
+<span class="sourceLineNo">100</span>    /**<a name="line.100"></a>
+<span class="sourceLineNo">101</span>     * Create a new CreditCardValidator with default options.<a name="line.101"></a>
+<span class="sourceLineNo">102</span>     */<a name="line.102"></a>
+<span class="sourceLineNo">103</span>    public CreditCardValidator() {<a name="line.103"></a>
+<span class="sourceLineNo">104</span>        this(AMEX + VISA + MASTERCARD + DISCOVER);<a name="line.104"></a>
+<span class="sourceLineNo">105</span>    }<a name="line.105"></a>
+<span class="sourceLineNo">106</span><a name="line.106"></a>
+<span class="sourceLineNo">107</span>    /**<a name="line.107"></a>
+<span class="sourceLineNo">108</span>     * Creates a new CreditCardValidator with the specified options.<a name="line.108"></a>
+<span class="sourceLineNo">109</span>     * @param options Pass in<a name="line.109"></a>
+<span class="sourceLineNo">110</span>     * CreditCardValidator.VISA + CreditCardValidator.AMEX to specify that<a name="line.110"></a>
+<span class="sourceLineNo">111</span>     * those are the only valid card types.<a name="line.111"></a>
+<span class="sourceLineNo">112</span>     */<a name="line.112"></a>
+<span class="sourceLineNo">113</span>    public CreditCardValidator(int options) {<a name="line.113"></a>
+<span class="sourceLineNo">114</span>        super();<a name="line.114"></a>
+<span class="sourceLineNo">115</span><a name="line.115"></a>
+<span class="sourceLineNo">116</span>        Flags f = new Flags(options);<a name="line.116"></a>
+<span class="sourceLineNo">117</span>        if (f.isOn(VISA)) {<a name="line.117"></a>
+<span class="sourceLineNo">118</span>            this.cardTypes.add(new Visa());<a name="line.118"></a>
+<span class="sourceLineNo">119</span>        }<a name="line.119"></a>
+<span class="sourceLineNo">120</span><a name="line.120"></a>
+<span class="sourceLineNo">121</span>        if (f.isOn(AMEX)) {<a name="line.121"></a>
+<span class="sourceLineNo">122</span>            this.cardTypes.add(new Amex());<a name="line.122"></a>
+<span class="sourceLineNo">123</span>        }<a name="line.123"></a>
+<span class="sourceLineNo">124</span><a name="line.124"></a>
+<span class="sourceLineNo">125</span>        if (f.isOn(MASTERCARD)) {<a name="line.125"></a>
+<span class="sourceLineNo">126</span>            this.cardTypes.add(new Mastercard());<a name="line.126"></a>
+<span class="sourceLineNo">127</span>        }<a name="line.127"></a>
+<span class="sourceLineNo">128</span><a name="line.128"></a>
+<span class="sourceLineNo">129</span>        if (f.isOn(DISCOVER)) {<a name="line.129"></a>
+<span class="sourceLineNo">130</span>            this.cardTypes.add(new Discover());<a name="line.130"></a>
+<span class="sourceLineNo">131</span>        }<a name="line.131"></a>
+<span class="sourceLineNo">132</span>    }<a name="line.132"></a>
+<span class="sourceLineNo">133</span><a name="line.133"></a>
+<span class="sourceLineNo">134</span>    /**<a name="line.134"></a>
+<span class="sourceLineNo">135</span>     * Checks if the field is a valid credit card number.<a name="line.135"></a>
+<span class="sourceLineNo">136</span>     * @param card The card number to validate.<a name="line.136"></a>
+<span class="sourceLineNo">137</span>     * @return Whether the card number is valid.<a name="line.137"></a>
+<span class="sourceLineNo">138</span>     */<a name="line.138"></a>
+<span class="sourceLineNo">139</span>    public boolean isValid(String card) {<a name="line.139"></a>
+<span class="sourceLineNo">140</span>        if ((card == null) || (card.length() &lt; 13) || (card.length() &gt; 19)) {<a name="line.140"></a>
+<span class="sourceLineNo">141</span>            return false;<a name="line.141"></a>
+<span class="sourceLineNo">142</span>        }<a name="line.142"></a>
+<span class="sourceLineNo">143</span><a name="line.143"></a>
+<span class="sourceLineNo">144</span>        if (!this.luhnCheck(card)) {<a name="line.144"></a>
+<span class="sourceLineNo">145</span>            return false;<a name="line.145"></a>
+<span class="sourceLineNo">146</span>        }<a name="line.146"></a>
+<span class="sourceLineNo">147</span><a name="line.147"></a>
+<span class="sourceLineNo">148</span>        for (Object cardType : this.cardTypes) {<a name="line.148"></a>
+<span class="sourceLineNo">149</span>            CreditCardType type = (CreditCardType) cardType;<a name="line.149"></a>
+<span class="sourceLineNo">150</span>            if (type.matches(card)) {<a name="line.150"></a>
+<span class="sourceLineNo">151</span>                return true;<a name="line.151"></a>
+<span class="sourceLineNo">152</span>            }<a name="line.152"></a>
+<span class="sourceLineNo">153</span>        }<a name="line.153"></a>
+<span class="sourceLineNo">154</span><a name="line.154"></a>
+<span class="sourceLineNo">155</span>        return false;<a name="line.155"></a>
+<span class="sourceLineNo">156</span>    }<a name="line.156"></a>
+<span class="sourceLineNo">157</span><a name="line.157"></a>
+<span class="sourceLineNo">158</span>    /**<a name="line.158"></a>
+<span class="sourceLineNo">159</span>     * Adds an allowed CreditCardType that participates in the card<a name="line.159"></a>
+<span class="sourceLineNo">160</span>     * validation algorithm.<a name="line.160"></a>
+<span class="sourceLineNo">161</span>     * @param type The type that is now allowed to pass validation.<a name="line.161"></a>
+<span class="sourceLineNo">162</span>     * @since Validator 1.1.2<a name="line.162"></a>
+<span class="sourceLineNo">163</span>     */<a name="line.163"></a>
+<span class="sourceLineNo">164</span>    public void addAllowedCardType(CreditCardType type){<a name="line.164"></a>
+<span class="sourceLineNo">165</span>        this.cardTypes.add(type);<a name="line.165"></a>
+<span class="sourceLineNo">166</span>    }<a name="line.166"></a>
+<span class="sourceLineNo">167</span><a name="line.167"></a>
+<span class="sourceLineNo">168</span>    /**<a name="line.168"></a>
+<span class="sourceLineNo">169</span>     * Checks for a valid credit card number.<a name="line.169"></a>
+<span class="sourceLineNo">170</span>     * @param cardNumber Credit Card Number.<a name="line.170"></a>
+<span class="sourceLineNo">171</span>     * @return Whether the card number passes the luhnCheck.<a name="line.171"></a>
+<span class="sourceLineNo">172</span>     */<a name="line.172"></a>
+<span class="sourceLineNo">173</span>    protected boolean luhnCheck(String cardNumber) {<a name="line.173"></a>
+<span class="sourceLineNo">174</span>        // number must be validated as 0..9 numeric first!!<a name="line.174"></a>
+<span class="sourceLineNo">175</span>        int digits = cardNumber.length();<a name="line.175"></a>
+<span class="sourceLineNo">176</span>        int oddOrEven = digits &amp; 1;<a name="line.176"></a>
+<span class="sourceLineNo">177</span>        long sum = 0;<a name="line.177"></a>
+<span class="sourceLineNo">178</span>        for (int count = 0; count &lt; digits; count++) {<a name="line.178"></a>
+<span class="sourceLineNo">179</span>            int digit = 0;<a name="line.179"></a>
+<span class="sourceLineNo">180</span>            try {<a name="line.180"></a>
+<span class="sourceLineNo">181</span>                digit = Integer.parseInt(cardNumber.charAt(count) + "");<a name="line.181"></a>
+<span class="sourceLineNo">182</span>            } catch(NumberFormatException e) {<a name="line.182"></a>
+<span class="sourceLineNo">183</span>                return false;<a name="line.183"></a>
+<span class="sourceLineNo">184</span>            }<a name="line.184"></a>
+<span class="sourceLineNo">185</span><a name="line.185"></a>
+<span class="sourceLineNo">186</span>            if (((count &amp; 1) ^ oddOrEven) == 0) { // not<a name="line.186"></a>
+<span class="sourceLineNo">187</span>                digit *= 2;<a name="line.187"></a>
+<span class="sourceLineNo">188</span>                if (digit &gt; 9) {<a name="line.188"></a>
+<span class="sourceLineNo">189</span>                    digit -= 9;<a name="line.189"></a>
+<span class="sourceLineNo">190</span>                }<a name="line.190"></a>
+<span class="sourceLineNo">191</span>            }<a name="line.191"></a>
+<span class="sourceLineNo">192</span>            sum += digit;<a name="line.192"></a>
+<span class="sourceLineNo">193</span>        }<a name="line.193"></a>
+<span class="sourceLineNo">194</span><a name="line.194"></a>
+<span class="sourceLineNo">195</span>        return (sum == 0) ? false : (sum % 10 == 0);<a name="line.195"></a>
+<span class="sourceLineNo">196</span>    }<a name="line.196"></a>
+<span class="sourceLineNo">197</span><a name="line.197"></a>
+<span class="sourceLineNo">198</span>    /**<a name="line.198"></a>
+<span class="sourceLineNo">199</span>     * CreditCardType implementations define how validation is performed<a name="line.199"></a>
+<span class="sourceLineNo">200</span>     * for one type/brand of credit card.<a name="line.200"></a>
+<span class="sourceLineNo">201</span>     * @since Validator 1.1.2<a name="line.201"></a>
+<span class="sourceLineNo">202</span>     */<a name="line.202"></a>
+<span class="sourceLineNo">203</span>    public interface CreditCardType {<a name="line.203"></a>
+<span class="sourceLineNo">204</span><a name="line.204"></a>
+<span class="sourceLineNo">205</span>        /**<a name="line.205"></a>
+<span class="sourceLineNo">206</span>         * Returns true if the card number matches this type of credit<a name="line.206"></a>
+<span class="sourceLineNo">207</span>         * card.  Note that this method is &lt;strong&gt;not&lt;/strong&gt; responsible<a name="line.207"></a>
+<span class="sourceLineNo">208</span>         * for analyzing the general form of the card number because<a name="line.208"></a>
+<span class="sourceLineNo">209</span>         * &lt;code&gt;CreditCardValidator&lt;/code&gt; performs those checks before<a name="line.209"></a>
+<span class="sourceLineNo">210</span>         * calling this method.  It is generally only required to valid the<a name="line.210"></a>
+<span class="sourceLineNo">211</span>         * length and prefix of the number to determine if it's the correct<a name="line.211"></a>
+<span class="sourceLineNo">212</span>         * type.<a name="line.212"></a>
+<span class="sourceLineNo">213</span>         * @param card The card number, never null.<a name="line.213"></a>
+<span class="sourceLineNo">214</span>         * @return true if the number matches.<a name="line.214"></a>
+<span class="sourceLineNo">215</span>         */<a name="line.215"></a>
+<span class="sourceLineNo">216</span>        boolean matches(String card);<a name="line.216"></a>
+<span class="sourceLineNo">217</span><a name="line.217"></a>
+<span class="sourceLineNo">218</span>    }<a name="line.218"></a>
+<span class="sourceLineNo">219</span><a name="line.219"></a>
+<span class="sourceLineNo">220</span>    /**<a name="line.220"></a>
+<span class="sourceLineNo">221</span>     *  Change to support Visa Carte Blue used in France<a name="line.221"></a>
+<span class="sourceLineNo">222</span>     *  has been removed - see Bug 35926<a name="line.222"></a>
+<span class="sourceLineNo">223</span>     */<a name="line.223"></a>
+<span class="sourceLineNo">224</span>    private static class Visa implements CreditCardType {<a name="line.224"></a>
+<span class="sourceLineNo">225</span>        private static final String PREFIX = "4";<a name="line.225"></a>
+<span class="sourceLineNo">226</span>        @Override<a name="line.226"></a>
+<span class="sourceLineNo">227</span>        public boolean matches(String card) {<a name="line.227"></a>
+<span class="sourceLineNo">228</span>            return (<a name="line.228"></a>
+<span class="sourceLineNo">229</span>                card.substring(0, 1).equals(PREFIX)<a name="line.229"></a>
+<span class="sourceLineNo">230</span>                    &amp;&amp; (card.length() == 13 || card.length() == 16));<a name="line.230"></a>
+<span class="sourceLineNo">231</span>        }<a name="line.231"></a>
+<span class="sourceLineNo">232</span>    }<a name="line.232"></a>
+<span class="sourceLineNo">233</span><a name="line.233"></a>
+<span class="sourceLineNo">234</span>    private static class Amex implements CreditCardType {<a name="line.234"></a>
+<span class="sourceLineNo">235</span>        private static final String PREFIX = "34,37,";<a name="line.235"></a>
+<span class="sourceLineNo">236</span>        @Override<a name="line.236"></a>
+<span class="sourceLineNo">237</span>        public boolean matches(String card) {<a name="line.237"></a>
+<span class="sourceLineNo">238</span>            String prefix2 = card.substring(0, 2) + ",";<a name="line.238"></a>
+<span class="sourceLineNo">239</span>            return ((PREFIX.contains(prefix2)) &amp;&amp; (card.length() == 15));<a name="line.239"></a>
+<span class="sourceLineNo">240</span>        }<a name="line.240"></a>
+<span class="sourceLineNo">241</span>    }<a name="line.241"></a>
+<span class="sourceLineNo">242</span><a name="line.242"></a>
+<span class="sourceLineNo">243</span>    private static class Discover implements CreditCardType {<a name="line.243"></a>
+<span class="sourceLineNo">244</span>        private static final String PREFIX = "6011";<a name="line.244"></a>
+<span class="sourceLineNo">245</span>        @Override<a name="line.245"></a>
+<span class="sourceLineNo">246</span>        public boolean matches(String card) {<a name="line.246"></a>
+<span class="sourceLineNo">247</span>            return (card.substring(0, 4).equals(PREFIX) &amp;&amp; (card.length() == 16));<a name="line.247"></a>
+<span class="sourceLineNo">248</span>        }<a name="line.248"></a>
+<span class="sourceLineNo">249</span>    }<a name="line.249"></a>
+<span class="sourceLineNo">250</span><a name="line.250"></a>
+<span class="sourceLineNo">251</span>    private static class Mastercard implements CreditCardType {<a name="line.251"></a>
+<span class="sourceLineNo">252</span>        private static final String PREFIX = "51,52,53,54,55,";<a name="line.252"></a>
+<span class="sourceLineNo">253</span>        @Override<a name="line.253"></a>
+<span class="sourceLineNo">254</span>        public boolean matches(String card) {<a name="line.254"></a>
+<span class="sourceLineNo">255</span>            String prefix2 = card.substring(0, 2) + ",";<a name="line.255"></a>
+<span class="sourceLineNo">256</span>            return ((PREFIX.contains(prefix2)) &amp;&amp; (card.length() == 16));<a name="line.256"></a>
+<span class="sourceLineNo">257</span>        }<a name="line.257"></a>
+<span class="sourceLineNo">258</span>    }<a name="line.258"></a>
+<span class="sourceLineNo">259</span><a name="line.259"></a>
+<span class="sourceLineNo">260</span>}<a name="line.260"></a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</pre>
+</div>
+</body>
+</html>
