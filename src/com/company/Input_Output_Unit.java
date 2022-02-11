@@ -200,14 +200,13 @@ public class Input_Output_Unit {
 
     private boolean special_lines(String text) {
         ArrayList<String> arrayList = new ArrayList<>();
-        arrayList.add("(Wrong )(a)?(A)?(answer)( on test)*( )*[0-9]*");
-        arrayList.add("(Wrong )(a)?(A)?(answer)( on pretest)*( )*[0-9]*");
-        arrayList.add("(Wrong Answer)( on test)*( )*[0-9]*");
-        arrayList.add("(Time limit exceeded)( on test)*( )*[0-9]*");
-        arrayList.add("(Runtime error)( on test)*( )*[0-9]*");
-        arrayList.add("(Idleness limit exceeded)( on test)*( )*[0-9]*");
-        arrayList.add("(Idleness limit exceeded)( on test)*( )*[0-9]*");
-        arrayList.add("(Memory limit exceeded)( )*[0-9]*");
+        arrayList.add("(Wrong )(a)?(A)?(answer)( on test)*( on pretest)*( )*[0-9]*");
+        arrayList.add("(Wrong Answer)( on test)*( on pretest)*( )*[0-9]*");
+        arrayList.add("(Time limit exceeded)( on test)*( on pretest)*( )*[0-9]*");
+        arrayList.add("(Runtime error)( on test)*( on pretest)*( )*[0-9]*");
+        arrayList.add("(Idleness limit exceeded)( on test)*( on pretest)*( )*[0-9]*");
+        arrayList.add("(Idleness limit exceeded)( on test)*( on pretest)*( )*[0-9]*");
+        arrayList.add("(Memory limit exceeded)( on test)*( on pretest)*( )*[0-9]*");
         arrayList.add("(Denial of judgement)( )*[0-9]*");
         arrayList.add("(Compilation error)");
         for(String str : arrayList) {

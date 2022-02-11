@@ -77,7 +77,7 @@ public class Codeforces implements Websites {
         }
         List data = automation.get_driver().findElements(By.className("sample-test"));
         automation.problem_input_output.add_to_status("\nconnect Successfully!\n");
-        automation.problem_input_output.add_to_status("fetching the data from the server...\n");
+        automation.problem_input_output.add_to_status("fetching the test cases...\n");
         if(data.size() == 0) {
             throw new MalformedURLException();
         }
