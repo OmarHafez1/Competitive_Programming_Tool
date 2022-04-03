@@ -3,6 +3,8 @@ package com.company;
 import org.apache.commons.validator.routines.UrlValidator;
 
 import javax.swing.*;
+import java.awt.*;
+import java.awt.datatransfer.DataFlavor;
 import java.awt.event.*;
 import java.io.File;
 import java.net.MalformedURLException;
@@ -59,9 +61,24 @@ public class Problem_Input_Output extends JFrame {
         this.url.setText(url.trim());
     }
     protected void paste_problem_url() {
-        url.setText("");
-        url.paste();
-        url.setText(url.getText().trim());
+        try {
+            String url_string = (String) Toolkit.getDefaultToolkit().getSystemClipboard().getData(DataFlavor.stringFlavor);
+            url_string = url_string.trim();
+            if(!isValidURL(url_string)) return;
+            url.setText(url_string);
+        } catch (Exception exception) {
+            exception.printStackTrace();
+        }
+    }
+
+    public static boolean isValidURL(String urlString) {
+        try {
+            URL url = new URL(urlString);
+            url.toURI();
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     protected void exit() {
