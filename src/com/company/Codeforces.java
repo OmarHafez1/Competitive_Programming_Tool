@@ -141,9 +141,9 @@ public class Codeforces implements Websites {
     }
 
     private String get_taple_xpath() throws Exception {
-        int tmp = 3;
-        while(automation.get_driver().findElements(By.xpath("//*[@id='sidebar']/div[" + tmp + "]/table")).size() == 0 && tmp <= 12) tmp++;
-        if(tmp == 13) throw new Exception("Can't find codeforces results table");
+        int tmp = 12;
+        while(automation.get_driver().findElements(By.xpath("//*[@id='sidebar']/div[" + tmp + "]/table")).size() == 0 && tmp >=3) tmp--;
+        if(tmp == 2) throw new Exception("Can't find codeforces results table");
         return "//*[@id='sidebar']/div["+tmp+"]/table";
     }
 
@@ -166,8 +166,9 @@ public class Codeforces implements Websites {
                 automation.input_output_unit.setOutput(start_string + get_table_result(get_taple_xpath()));
                 automation.sleep(500);
             }
-            automation.input_output_unit.setOutput(start_string + get_table_result(get_taple_xpath()));
-            if(get_table_result(get_taple_xpath()).contains("Accepted") || get_table_result(get_taple_xpath()).contains("Happy New Year!")) {
+            String result = get_table_result(get_taple_xpath());
+            automation.input_output_unit.setOutput(start_string + result);
+            if(result.contains("Accepted") || result.contains("Happy New Year!") || result.contains("Pretests passed")) {
                 automation.problem_input_output.save_the_file();
             }
         } catch (Exception exception) {
