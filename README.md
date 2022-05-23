@@ -40,9 +40,10 @@ I will add to it in the future some other programming language.
 # **[Stress test your code](https://codeforces.com/blog/entry/103132):**
 
 Now you can Stress test your code using this new feature. Just **click F8 to open it.**
-<a href="https://imgbb.com/"><img src="[https://i.ibb.co/wQB3d0w/Screenshot-from-2021-09-26-18-16-18.png](https://ibb.co/s68Jf9Y)" alt="Screenshot-from-2021-09-26-18-16-18" border="0"></a>
 
 
+<a href="https://ibb.co/7Vd5KC3"><img src="https://i.ibb.co/mtVw4Tn/2.png" alt="2" border="0"></a>
+<a href="https://ibb.co/s68Jf9Y"><img src="https://i.ibb.co/cC4XBhn/5.png" alt="5" border="0"></a>
 
 # **How to use it:**
 You will need to put your code files in the CODE folder. (in CODE folder you will find C++ folder, Java folded, and Python folder to put your code in them) 
