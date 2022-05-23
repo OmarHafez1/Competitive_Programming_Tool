@@ -108,7 +108,6 @@ public class Competitive_Programming extends JFrame {
         check_login();
         competitiveProgramming.minmum_window_size[1] = (int)screenSize.getHeight() - 150;
         competitiveProgramming.setDefaultWindowSize();
-        competitiveProgramming.setAlwaysOnTop(true);
         competitiveProgramming.setMinimumSize(new Dimension(competitiveProgramming.minmum_window_size[0], competitiveProgramming.minmum_window_size[1]));
         competitiveProgramming.setVisible(true);
     }
@@ -286,8 +285,6 @@ public class Competitive_Programming extends JFrame {
             }
         });
         jpanel.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke("F1"), "automation");
-
-        // I didn't test this enough so i am commented this now
 
         jpanel.getActionMap().put("hack", new AbstractAction("hack") {
             public void actionPerformed(ActionEvent actionEvent) {
