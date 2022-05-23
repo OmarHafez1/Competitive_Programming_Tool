@@ -37,6 +37,14 @@ This tool will Encrypt your username and password and store them. (This process 
 # **Works for C++, Python, and Java:**  
 I will add to it in the future some other programming language.
 
+# **[Stress test your code](https://codeforces.com/blog/entry/103132):**
+
+Now you can Stress test your code using this new feature. Just **click F8 to open it.**
+
+<a href="https://ibb.co/s68Jf9Y"><img src="https://i.ibb.co/cC4XBhn/5.png" alt="5" border="0"></a>
+
+
+
 # **How to use it:**
 You will need to put your code files in the CODE folder. (in CODE folder you will find C++ folder, Java folded, and Python folder to put your code in them) 
 Then write the name of your file down right textBox (without the extension of the file i.e. A not A.cpp or A.java or A.py just A)
