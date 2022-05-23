@@ -357,7 +357,7 @@ public class Hack_solution extends JFrame {
                     return false;
                 }
 
-                progressBar.setValue(progressBar.getValue() + i/(100-progressBar.getValue()));
+                progressBar.setValue(progressBar.getValue() + i/(Math.max(100-progressBar.getValue(), 1)));
 
                 error = run_compile_unit.run_file_to_file(acceptedFile, Competitive_Programming.competitiveProgramming.comboBox1.getSelectedIndex(),
                         path + "/input/" + i + ".txt", path + "/output/" + i + ".txt");
