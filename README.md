@@ -40,8 +40,7 @@ I will add to it in the future some other programming language.
 # **[Stress test your code](https://codeforces.com/blog/entry/103132):**
 
 Now you can Stress test your code using this new feature. Just **click F8 to open it.**
-
-<a href="https://ibb.co/s68Jf9Y"><img src="https://i.ibb.co/cC4XBhn/5.png" alt="5" border="0"></a>
+<a href="https://imgbb.com/"><img src="[https://i.ibb.co/wQB3d0w/Screenshot-from-2021-09-26-18-16-18.png](https://ibb.co/s68Jf9Y)" alt="Screenshot-from-2021-09-26-18-16-18" border="0"></a>
 
 
 
