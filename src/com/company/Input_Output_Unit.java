@@ -17,7 +17,7 @@ public class Input_Output_Unit {
     private DefaultStyledDocument document;
     private StyleContext styleContext;
     protected ArrayList<JTextArea> inputTexts, answersTexts;
-   // private final Font font = new Font(Competitive_Programming.FONT_NAME, Font.PLAIN, RESENT_FONT_SIZE);
+    // private final Font font = new Font(Competitive_Programming.FONT_NAME, Font.PLAIN, RESENT_FONT_SIZE);
     private int currentSize = 0;
     private JScrollPane input_JScrollPane, output_scrollPane;
     private Run_Compile_Unit run_compile_unit;
@@ -63,8 +63,8 @@ public class Input_Output_Unit {
             }
         }
         double memory = Math.round((memoryUsed / 1000.0) * 100.0) / 100.0;
-        jEditorPane.setText(jEditorPane.getText() + "Test case " + numberOfInput + ":    >>" + timeUsed + "mS" +
-                "     >>" + ((memory >= 1000.0)? (Math.round(memory/10.0)/100.0 + "MB\n") : (memory + "KB\n")) + outputMessage + "\n" + res);
+        jEditorPane.setText(jEditorPane.getText() + "Test case " + numberOfInput + ":  >>" + timeUsed + "mS" +
+                "  >>" + ((memory >= 1000.0)? (Math.round(memory/10.0)/100.0 + "MB\n") : (memory + "KB\n")) + outputMessage + "\n" + res);
         jEditorPane.setCaretPosition(0);
     }
 
@@ -112,7 +112,7 @@ public class Input_Output_Unit {
     }
 
     private void setResentFontSize() {
-        jEditorPane.setFont(new Font(FONT_NAME, FONT_STYLE, RESENT_OUTPUT_FONT_SIZE));
+        jEditorPane.setFont(new Font("YaHei Consolas Hybrid", FONT_STYLE, RESENT_OUTPUT_FONT_SIZE));
     }
 
     protected void setErrorFontSize() {
@@ -146,9 +146,9 @@ public class Input_Output_Unit {
                 String lines[] = text.split("\\r?\\n");
                 for (String txt : lines) {
                     end += txt.length();
-                    if(txt.matches("(Test case )[0-9]*(:    >>)[0-9]*(m)?(S     >>)[0-9]*(\\.)[0-9]*((K|M)?B)")) {
-                        document.setCharacterAttributes(start,  15, getAttribute(styleContext, (new Color(4, 226, 0))), false);
-                        document.setCharacterAttributes(start + 16, txt.length() - 16, getAttribute(styleContext, (new Color(57, 194, 255))), false);
+                    if(txt.matches("(Test case )[0-9]*(:( )*>>)[0-9]*(m)?(S( )*>>)[0-9]*(\\.)[0-9]*((K|M)?B)")) {
+                        document.setCharacterAttributes(start,  13, getAttribute(styleContext, (new Color(4, 226, 0))), false);
+                        document.setCharacterAttributes(start + 14, txt.length() - 14, getAttribute(styleContext, (new Color(57, 194, 255))), false);
                     } else {
                         setLineAttripute(txt, start, end);
                     }
@@ -200,14 +200,13 @@ public class Input_Output_Unit {
 
     private boolean special_lines(String text) {
         ArrayList<String> arrayList = new ArrayList<>();
-        arrayList.add("(Wrong )(a)?(A)?(answer)( on test)*( on pretest)*( )*[0-9]*");
-        arrayList.add("(Wrong Answer)( on test)*( on pretest)*( )*[0-9]*");
+        arrayList.add("(Wrong )(answer)*(Answer)*( on test)*( on pretest)*( )*[0-9]*");
         arrayList.add("(Time limit exceeded)( on test)*( on pretest)*( )*[0-9]*");
         arrayList.add("(Runtime error)( on test)*( on pretest)*( )*[0-9]*");
         arrayList.add("(Idleness limit exceeded)( on test)*( on pretest)*( )*[0-9]*");
         arrayList.add("(Idleness limit exceeded)( on test)*( on pretest)*( )*[0-9]*");
         arrayList.add("(Memory limit exceeded)( on test)*( on pretest)*( )*[0-9]*");
-        arrayList.add("(Denial of judgement)( )*[0-9]*");
+        arrayList.add("(Denial of judgement)( on test)*( on pretest)*( )*[0-9]*");
         arrayList.add("(Compilation error)");
         for(String str : arrayList) {
             if(text.trim().matches(str)) return true;
@@ -255,8 +254,8 @@ public class Input_Output_Unit {
     protected void setLineAttripute(String text, int start, int end) {
         try {
             if(special_lines(text)) {
-               // document.setCharacterAttributes(start, end - start, getAttribute(styleContext, (new Color(255, 255, 255))), false);
-               // jEditorPane.getHighlighter().removeAllHighlights();
+                // document.setCharacterAttributes(start, end - start, getAttribute(styleContext, (new Color(255, 255, 255))), false);
+                // jEditorPane.getHighlighter().removeAllHighlights();
                 document.setCharacterAttributes(start, end - start+1, getAttribute(styleContext, (new Color(255, 228, 228))), false);
                 javax.swing.text.DefaultHighlighter.DefaultHighlightPainter highlightPainter = new javax.swing.text.DefaultHighlighter.DefaultHighlightPainter(new Color(123, 0, 0));
                 jEditorPane.getHighlighter().addHighlight(start, end, highlightPainter);

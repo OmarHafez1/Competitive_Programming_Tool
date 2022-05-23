@@ -54,7 +54,7 @@ public class Problem_Input_Output extends JFrame {
         return Competitive_Programming.folderPath + "/CODE/Java" + Competitive_Programming.get_fileName() + ".java";
     }
 
-    protected String get_problem_url () {
+    public String get_problem_url () {
         return url.getText();
     }
     protected void set_problem_url(String url) {
@@ -62,22 +62,13 @@ public class Problem_Input_Output extends JFrame {
     }
     protected void paste_problem_url() {
         try {
-            String url_string = (String) Toolkit.getDefaultToolkit().getSystemClipboard().getData(DataFlavor.stringFlavor);
-            url_string = url_string.trim();
-            if(!isValidURL(url_string)) return;
-            url.setText(url_string);
-        } catch (Exception exception) {
+            String data = (String) Toolkit.getDefaultToolkit().getSystemClipboard().getData(DataFlavor.stringFlavor);
+            url.setText("");
+            if(!isUrl(data)) return;
+            url.paste();
+            url.setText(url.getText().trim());
+        } catch(Exception exception) {
             exception.printStackTrace();
-        }
-    }
-
-    public static boolean isValidURL(String urlString) {
-        try {
-            URL url = new URL(urlString);
-            url.toURI();
-            return true;
-        } catch (Exception e) {
-            return false;
         }
     }
 
@@ -173,6 +164,16 @@ public class Problem_Input_Output extends JFrame {
         });
         thread.start();
 
+    }
+
+    boolean isUrl(String urlString) {
+        try {
+            URL url = new URL(urlString);
+            url.toURI();
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     private boolean url_valid () {

@@ -33,6 +33,11 @@ public class Hack_solution extends JFrame {
             this.number_of_testCases = number_of_testCases;
             this.testCase_generator = testCase_generator;
             this.url = url;
+            if(url.trim().isEmpty()) {
+                if(Competitive_Programming.competitiveProgramming.problem_input_output != null) {
+                    this.url = Competitive_Programming.competitiveProgramming.problem_input_output.get_problem_url();
+                }
+            }
             this.timeLimit = timeLimit;
             this.jcheck_state = jcheck_state;
         }
@@ -64,7 +69,6 @@ public class Hack_solution extends JFrame {
         jCheckBox.setFont(new Font(Competitive_Programming.FONT_NAME, Font.PLAIN, 20));
         jCheckBox.setForeground(Color.blue);
 
-        link = new JTextField();
         status = new JEditorPane();
         status.setEditable(false);
         status.setFont(new Font(Competitive_Programming.FONT_NAME, Font.PLAIN, 18));
@@ -117,6 +121,9 @@ public class Hack_solution extends JFrame {
         timeLimit = new JTextField();
         timeLimit.setFont(new Font(Competitive_Programming.FONT_NAME, Font.PLAIN, 20));
         link = new JTextField();
+        if(Competitive_Programming.competitiveProgramming.problem_input_output != null) {
+            link.setText(Competitive_Programming.competitiveProgramming.problem_input_output.get_problem_url());
+        }
         link.setFont(new Font(Competitive_Programming.FONT_NAME, Font.PLAIN, 20));
         number_of_testCases = new JTextField();
         number_of_testCases.setFont(new Font(Competitive_Programming.FONT_NAME, Font.PLAIN, 20));
@@ -199,6 +206,17 @@ public class Hack_solution extends JFrame {
         acceptedFile = ac_solution.getText().trim();
         hackFile = hack_solution.getText().trim();
         url = link.getText().trim();
+        String path = Competitive_Programming.folderPath + "/TestCases/" + Problem_Input_Output.convert_URL_to_Name(url);
+        if(jCheckBox.isSelected()) {
+            File file = new File(path);
+            if(file.exists()) {
+                try {
+                    FileUtils.deleteDirectory(new File(path));
+                } catch (Exception exception) {
+                    exception.printStackTrace();
+                }
+            }
+        }
         testCase_generator_file = testCase_generator.getText().trim();
         time_limit = Double.valueOf(timeLimit.getText().trim());
         if(jCheckBox.isSelected())
@@ -210,8 +228,8 @@ public class Hack_solution extends JFrame {
             status.setText("Please add valid url\n");
             return;
         }
-        String path = Competitive_Programming.folderPath + "/TestCases/" + Problem_Input_Output.convert_URL_to_Name(url);
-        if (jCheckBox.isSelected() || !new File(path).exists()) {
+
+        if (!new File(path).exists()) {
             System.out.println("Generating testCases...\n");
             add_to_status("Generating testCase...\n");
             if(!generate_testCases(path, number_of_generated_testCases)) {
@@ -259,7 +277,7 @@ public class Hack_solution extends JFrame {
             while (thread != null && thread.isAlive()) {
                 Automation.sleep(500);
                 time++;
-                if(time == 10) {
+                if(time == 50) {
                     add_to_status("Time Limit Exceeded at test case: " + i + ".txt\n");
                     return;
                 }
@@ -272,8 +290,9 @@ public class Hack_solution extends JFrame {
                 add_to_status("Time Limit Exceeded at test case: " + i + ".txt\n");
                 return;
             }
-            if(!compareTextFiles(Competitive_Programming.folderPath + "/src/TEMPS/" + i + ".txt", path + "/output/" + i + ".txt")) {
-                add_to_status("Wrong answer at test case: " + i + "\n");
+            int tmp = compareTextFiles(Competitive_Programming.folderPath + "/src/TEMPS/" + i + ".txt", path + "/output/" + i + ".txt");
+            if(tmp != -1) {
+                add_to_status("Wrong answer at file: " + i + "\ntest case: " + tmp + "\n");
                 return;
             }
             add_to_status("Accepted\n");
@@ -281,19 +300,27 @@ public class Hack_solution extends JFrame {
         add_to_status("\nAccepted\n");
     }
 
-    protected boolean compareTextFiles (String file1, String file2) throws Exception {
+    protected int compareTextFiles (String file1, String file2) throws Exception {
         BufferedReader br = new BufferedReader(new FileReader(file1)), br2 = new BufferedReader(new FileReader(file2));
+        int ind = 0;
         while (br.ready() && br2.ready()) {
-            if(!br.readLine().trim().equals(br2.readLine().trim())) return false;
+            if(!br.readLine().trim().equals(br2.readLine().trim())) {
+                br.close();
+                br2.close();
+                return ind+1;
+            }
+            ind++;
         }
-        if(br.ready() || br2.ready()) return false;
-        return true;
+        if(br.ready() || br2.ready()) return ind+1;
+        br.close();
+        br2.close();
+
+        return -1;
     }
 
     protected boolean generate_testCases(String path, int number_of_generated_testCases) {
         progressBar.setValue(0);
         progressBar.setVisible(true);
-
         try {
             if (run_compile_unit.compile(Competitive_Programming.competitiveProgramming.comboBox1.getSelectedIndex(), testCase_generator_file, false) == 1) {
                 add_to_status("Can't Compile the file " + testCase_generator_file + "\n");
@@ -302,21 +329,21 @@ public class Hack_solution extends JFrame {
 
             if(run_compile_unit.thread1 != null && run_compile_unit.thread1.isAlive()) run_compile_unit.thread1.join();
 
-            progressBar.setValue(10);
+            progressBar.setValue(progressBar.getValue()+5);
 
             if (run_compile_unit.compile(comboBox1.getSelectedIndex(), acceptedFile, false) == 1) {
                 add_to_status("Can't Compile the file " + acceptedFile + "\n");
                 return false;
             }
 
-            progressBar.setValue(20);
+            progressBar.setValue(progressBar.getValue()+5);
 
             if(run_compile_unit.thread1 != null && run_compile_unit.thread1.isAlive()) run_compile_unit.thread1.join();
 
             File file = new File(path);
             if(file.exists() && file.isDirectory())
                 FileUtils.deleteDirectory(new File(path));
-            file.mkdir();
+            new File(path).mkdir();
             new File(path + "/input/").mkdir();
             new File(path + "/output/").mkdir();
 
@@ -330,7 +357,7 @@ public class Hack_solution extends JFrame {
                     return false;
                 }
 
-                progressBar.setValue(value/50);
+                progressBar.setValue(progressBar.getValue() + i/(100-progressBar.getValue()));
 
                 error = run_compile_unit.run_file_to_file(acceptedFile, Competitive_Programming.competitiveProgramming.comboBox1.getSelectedIndex(),
                         path + "/input/" + i + ".txt", path + "/output/" + i + ".txt");
@@ -350,6 +377,7 @@ public class Hack_solution extends JFrame {
             exception.printStackTrace();
             return false;
         }
+        System.out.println("Generated Successfully\n");
         return true;
     }
 

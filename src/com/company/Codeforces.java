@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Codeforces implements Websites {
-    
+
     private Automation automation;
     protected void setter(Automation automation) {
         this.automation = automation;
@@ -59,7 +59,7 @@ public class Codeforces implements Websites {
                 automation.sleep(500);
         }
     }
-    
+
     public List<List<String>> load_testCases (String url) throws Exception {
         ArrayList<String> input = new ArrayList<>();
         ArrayList<String> output = new ArrayList<>();
@@ -140,14 +140,18 @@ public class Codeforces implements Websites {
         }
     }
 
-    private String get_taple_xpath() throws Exception {
-        int tmp = 12;
-        while(automation.get_driver().findElements(By.xpath("//*[@id='sidebar']/div[" + tmp + "]/table")).size() == 0 && tmp >=3) tmp--;
+    private String get_table_xpath() throws Exception {
+        int tmp = 14;
+        //*[@id="sidebar"]/div[6]/table
+        //*[@id="sidebar"]/div[6]/table/tbody/tr[2]/td[3]/span
+        while(automation.get_driver().findElements(By.xpath("//*[@id='sidebar']/div[" + tmp + "]/table")).size() == 0 && tmp >= 3) tmp--;
         if(tmp == 2) throw new Exception("Can't find codeforces results table");
         return "//*[@id='sidebar']/div["+tmp+"]/table";
     }
 
     private String get_table_result(String table_xpath) throws Exception {
+        //*[@id="sidebar"]/div[6]/table/tbody/tr[2]/td[3]
+        //*[@id="sidebar"]/div[6]/table
         WebElement Webtable = automation.get_driver().findElement(By.xpath(table_xpath));
         List<WebElement> totalRowCount = Webtable.findElements(By.xpath(table_xpath + "/tbody/tr"));
         if(totalRowCount.size() <= 1) {
@@ -159,14 +163,14 @@ public class Codeforces implements Websites {
     private void load_results(int count, String url) {
         try {
             String start_string = "codeforces.com problem: " + automation.competitiveProgramming.get_fileName() + "\n";
-            automation.wait_page_loading(By.xpath(get_taple_xpath()));
-            while (get_table_result(get_taple_xpath()).toLowerCase().contains("running") || get_table_result(get_taple_xpath()).toLowerCase().contains("queue")) {
+            automation.wait_page_loading(By.xpath(get_table_xpath()));
+            while (get_table_result(get_table_xpath()).toLowerCase().contains("running") || get_table_result(get_table_xpath()).toLowerCase().contains("queue")) {
                 automation.get_driver().get(url);
-                automation.wait_page_loading(By.xpath(get_taple_xpath()));
-                automation.input_output_unit.setOutput(start_string + get_table_result(get_taple_xpath()));
-                automation.sleep(500);
+                automation.wait_page_loading(By.xpath(get_table_xpath()));
+                automation.input_output_unit.setOutput(start_string + get_table_result(get_table_xpath()));
+                automation.sleep(100);
             }
-            String result = get_table_result(get_taple_xpath());
+            String result = get_table_result(get_table_xpath());
             automation.input_output_unit.setOutput(start_string + result);
             if(result.contains("Accepted") || result.contains("Happy New Year!") || result.contains("Pretests passed")) {
                 automation.problem_input_output.save_the_file();

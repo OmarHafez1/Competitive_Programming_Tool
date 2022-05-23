@@ -30,7 +30,7 @@ public class Run_Compile_Unit {
         stop_process();
         kill_process();
         thread4 = new Thread(() -> {
-                inputs_for_compile_and_run = inputs;
+            inputs_for_compile_and_run = inputs;
             try {
                 compile(language, Competitive_Programming.get_fileName(), true);
             } catch (Exception e) {
@@ -86,6 +86,7 @@ public class Run_Compile_Unit {
                 }
             }
             catch (Exception e) {
+                Competitive_Programming.competitiveProgramming.setWaitCursor(false);
                 e.printStackTrace();
             }
         });
@@ -165,7 +166,7 @@ public class Run_Compile_Unit {
                 while ((s = stdError.readLine()) != null) {
                     stringBuilder.append(s + "\n");
                 }
-                 error = stringBuilder;
+                error = stringBuilder;
                 // input_output_unit.sendError(stringBuilder.toString(), numberOfTestCase);
             }
         }
@@ -173,7 +174,7 @@ public class Run_Compile_Unit {
             Competitive_Programming.competitiveProgramming.setWaitCursor(false);
             e.printStackTrace();
         }
-
+        Competitive_Programming.competitiveProgramming.setWaitCursor(false);
         return error;
     }
 
@@ -247,7 +248,6 @@ public class Run_Compile_Unit {
                     thread3.start();
                 e.printStackTrace();
             }
-            Competitive_Programming.competitiveProgramming.setWaitCursor(false);
         });
         thread2.start();
 
@@ -261,11 +261,12 @@ public class Run_Compile_Unit {
                         stringBuilder.append(s + "\n");
                     }
                     output[1] = stringBuilder.toString().trim();
-                   // input_output_unit.sendError(stringBuilder.toString(), numberOfTestCase);
+                    // input_output_unit.sendError(stringBuilder.toString(), numberOfTestCase);
                 }
             }
             catch (Exception e) {
                 e.printStackTrace();
+                Competitive_Programming.competitiveProgramming.setWaitCursor(false);
             }
             Competitive_Programming.competitiveProgramming.setWaitCursor(false);
         });

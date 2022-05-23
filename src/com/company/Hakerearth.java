@@ -65,5 +65,5 @@ public class Hakerearth implements Websites{
         automation.problem_input_output.exit();
         return list;
     }
-    
+
 }
